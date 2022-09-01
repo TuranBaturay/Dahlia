@@ -7,8 +7,9 @@ import pygame
 import os
 import datetime as datetime
 
+
 class LevelViewer(Mode):
-    def __init__(self, app:App, display) -> None:
+    def __init__(self, app: App, display) -> None:
         self.ti = app.get_input()
         self.refresh = pygame.image.load("Assets/icons/refresh.png").convert_alpha()
         super().__init__(app, display)
@@ -66,7 +67,7 @@ class LevelViewer(Mode):
             color=[0, 0, 0, 0],
             border_color=lib.wet_blue,
             border=4,
-            border_radius=5
+            border_radius=5,
         )
 
         refresh_button = gui.Button(
@@ -78,25 +79,28 @@ class LevelViewer(Mode):
             image=self.refresh,
             func=self.init_gui,
             color=lib.dark_turquoise,
-            border_radius=10
+            border_radius=10,
         )
 
         new = gui.Button(
             self.gui_list,
-            refresh_button.rect.left-90,
+            refresh_button.rect.left - 90,
             left.rect.y + 10,
             80,
             30,
             text="New",
             color=lib.dark_turquoise,
-            border_radius=10
+            border_radius=10,
         )
 
         new.set_func(
-            lambda :self.ti.ask_input(
-                lambda text : self.add_level(text) if text else None,
-                400,200,
-                "Level Name",20,False
+            lambda: self.ti.ask_input(
+                lambda text: self.add_level(text) if text else None,
+                400,
+                200,
+                "Level Name",
+                20,
+                False,
             )
         )
         thumbnail = gui.Panel(
@@ -121,16 +125,20 @@ class LevelViewer(Mode):
             "",
             uid="level_name",
             color=lib.wet_blue,
-            border_radius=10
+            border_radius=10,
         )
 
-        self.last_modified =gui.TextBox(
+        self.last_modified = gui.TextBox(
             self.gui_list,
-            thumbnail.rect.x,thumbnail.rect.bottom+60,
-            320,30,text="",
-            color=lib.dark_blue,border=3,
+            thumbnail.rect.x,
+            thumbnail.rect.bottom + 60,
+            320,
+            30,
+            text="",
+            color=lib.dark_blue,
+            border=3,
             border_color=lib.wet_blue,
-            border_radius=10
+            border_radius=10,
         )
 
         play = gui.Button(
@@ -142,32 +150,30 @@ class LevelViewer(Mode):
             "Play",
             uid="play_button",
             color=lib.dark_turquoise,
-            border_radius=10
-
+            border_radius=10,
         )
         play.rect.centerx = right.rect.centerx
         gui.Button(
             self.gui_list,
-            play.rect.left-80,
+            play.rect.left - 80,
             right.rect.bottom - 50,
             70,
             30,
             "Edit",
             uid="edit_button",
             color=lib.wet_blue,
-            border_radius=10
-
+            border_radius=10,
         )
         gui.Button(
             self.gui_list,
-            play.rect.right+10,
+            play.rect.right + 10,
             right.rect.bottom - 50,
             70,
             30,
             "Delete",
             uid="remove_button",
             color=lib.darker_red,
-            border_radius=10
+            border_radius=10,
         )
         self.level_list = lib.get_files_in_dir("levels", ".json")
         row = 0
@@ -210,20 +216,28 @@ class LevelViewer(Mode):
                 lambda text: self.remove_level(level_name)
                 if text and text.lower() in ["yes", "y"]
                 else None,
-                400,200,
-                f"Delete '{level_name}' ?  (Yes/No)",3
+                400,
+                200,
+                f"Delete '{level_name}' ?  (Yes/No)",
+                3,
             )
         )
 
         thumbnail = lib.get_by_id(self.gui_list, "thumbnail")[0]
 
         play_button = lib.get_by_id(self.gui_list, "play_button")[0]
-        play_button.set_func(lambda: [self.load_level(level_name,skip_vignette=True)])
+        play_button.set_func(lambda: [self.load_level(level_name, skip_vignette=True)])
         edit_button = lib.get_by_id(self.gui_list, "edit_button")[0]
-        edit_button.set_func(lambda: [self.load_level(level_name, "edit",skip_vignette=True)])
+        edit_button.set_func(
+            lambda: [self.load_level(level_name, "edit", skip_vignette=True)]
+        )
         # print(play_button)
-        mtime = datetime.datetime.fromtimestamp(os.path.getmtime(f"levels/{level_name}.json"))
-        self.last_modified.set_text("Last modified : "+mtime.strftime("%m/%d/%Y, %H:%M:%S"))
+        mtime = datetime.datetime.fromtimestamp(
+            os.path.getmtime(f"levels/{level_name}.json")
+        )
+        self.last_modified.set_text(
+            "Last modified : " + mtime.strftime("%m/%d/%Y, %H:%M:%S")
+        )
 
         level_surf = lib.level_to_pixel(
             lib.load_data(lib.level_path + level_name + ".json")
@@ -234,12 +248,11 @@ class LevelViewer(Mode):
         thumbnail.draw()
         thumbnail.image.blit(scaled, (10, 10))
 
-
         # print(name_field)
 
-    def load_level(self, level_name, mode="game",skip_vignette=False):
+    def load_level(self, level_name, mode="game", skip_vignette=False):
 
-        self.app.load_level(level_name, mode,skip_vignette=skip_vignette)
+        self.app.load_level(level_name, mode, skip_vignette=skip_vignette)
 
     def remove_level(self, level_name):
         self.app.remove_level(level_name)
@@ -251,9 +264,10 @@ class LevelViewer(Mode):
             return
         if name in [os.path.basename(level).split(".")[0] for level in self.level_list]:
             return
-        self.app.level.__init__(self.display,self.app)
+        self.app.level.__init__(self.display, self.app)
         if self.app.save_level(name):
             self.init_gui()
             self.select_level(name)
+
     def on_enter_mode(self):
         self.init_gui()

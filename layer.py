@@ -273,7 +273,9 @@ class Layer:
 
     def hide(self):
         self.visible = False
+
     def show(self):
         self.visible = True
+
     def toggle_visibility(self):
         self.visible = not self.visible

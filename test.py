@@ -1,4 +1,3 @@
-
 import pygame
 import lib as lib
 from debugger import Debugger
@@ -178,14 +177,20 @@ while loop:
                     ti.ask_input(
                         lambda text: [
                             OptionFrame(
-                                gui_list, *sf.rect, color=[0, 0, 0, 0], border=3, text=text
+                                gui_list,
+                                *sf.rect,
+                                color=[0, 0, 0, 0],
+                                border=3,
+                                text=text
                             ),
                             sf.hide(),
-
                         ]
                         if text != None
                         else None,
-                        "Label",width=200,height=200,multiline=True
+                        "Label",
+                        width=200,
+                        height=200,
+                        multiline=True,
                     )
             elif event.key == pygame.K_f:
                 pygame.display.toggle_fullscreen()

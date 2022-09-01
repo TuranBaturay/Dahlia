@@ -27,7 +27,9 @@ class Mode:
 
     def onkeypress(self, keys):
         pass
+
     def on_enter_mode(self):
         pass
+
     def on_exit_mode(self):
         pass

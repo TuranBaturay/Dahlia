@@ -20,7 +20,7 @@ class Button(Panel):
         border_radius=0,
         font=26,
         border=0,
-        border_color=[50,50,50]
+        border_color=[50, 50, 50],
     ):
         self.text_panel = None
         self.disabled = False
@@ -32,9 +32,16 @@ class Button(Panel):
 
         self.img = image
         super().__init__(
-            list, x, y, width, height, color=color,
-            uid=uid, border_radius=border_radius,
-            border=border,border_color=border_color
+            list,
+            x,
+            y,
+            width,
+            height,
+            color=color,
+            uid=uid,
+            border_radius=border_radius,
+            border=border,
+            border_color=border_color,
         )
         self.highlight = self.image.copy()
         pygame.draw.rect(
@@ -47,7 +54,7 @@ class Button(Panel):
         self.dim = self.image.copy()
         pygame.draw.rect(
             self.dim,
-            (35,30,30),
+            (35, 30, 30),
             (0, 0, *self.rect.size),
             0,
             self.border_radius,
@@ -73,7 +80,7 @@ class Button(Panel):
     def set_img(self, img):
         self.img = img
         self.image.convert_alpha()
-        #self.color = (0, 0, 0, 0)
+        # self.color = (0, 0, 0, 0)
         self.draw()
 
     def set_text(self, text):
@@ -96,7 +103,8 @@ class Button(Panel):
 
     def set_color(self, color):
         self.color = color
-        if self.text_panel : self.text_panel.set_text(self.text_panel.text, color)
+        if self.text_panel:
+            self.text_panel.set_text(self.text_panel.text, color)
         self.draw()
 
     def right_click(self):
@@ -104,8 +112,10 @@ class Button(Panel):
             self.right_click_func()
 
     def click(self):
-        if not self.visible:return
-        if self.feedback: return
+        if not self.visible:
+            return
+        if self.feedback:
+            return
         self.feedback = 10
         # print("Click")
         self.draw()
