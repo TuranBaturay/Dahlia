@@ -306,7 +306,7 @@ class Edit(Mode):
                 func=lambda counter=counter: [
                     self.swap_layers(counter + 1, counter),
                     self.update_layer_selector(),
-                    print(counter),
+                    #print(counter),
                 ],
             )
             if i == 0:
@@ -326,7 +326,7 @@ class Edit(Mode):
                 func=lambda counter=counter: [
                     self.swap_layers(counter, counter - 1),
                     self.update_layer_selector(),
-                    print(counter),
+                    #print(counter),
                 ],
             )
             if i == max_len - 1:
@@ -412,14 +412,14 @@ class Edit(Mode):
         if index >= len(self.tileset_list):
             index = 0
         self.current_tileset = self.tileset_list[index]
-        print(self.current_tileset)
+        #print(self.current_tileset)
         self.tileset_label.set_text(self.current_tileset)
         self.set_page(self.pages[self.current_tileset])
         self.select_tile(self.selected_tiles[self.current_tileset])
         self.update_selector()
 
     def select_tile(self, index):
-        print(index)
+        #print(index)
         self.selected_tiles[self.current_tileset] = index
         if self.current_tileset == "animated":
             self.preview_tile.set(
@@ -453,7 +453,7 @@ class Edit(Mode):
             if self.current_tileset == "animated"
             else lib.tileset_cache
         )
-        print(page, (len(tileset) - 1) // 8)
+        #print(page, (len(tileset) - 1) // 8)
         if page <= 0:
             self.page_button_up.disable()
         else:
@@ -505,7 +505,7 @@ class Edit(Mode):
         self.update_layer_selector()
 
     def rename_layer(self, oldname, new_name):
-        print(oldname, new_name)
+        #print(oldname, new_name)
         if oldname == None or new_name == None:
             return
         if not self.app.level.rename_layer(oldname, new_name):
