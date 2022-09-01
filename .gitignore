@@ -1,2 +1,13 @@
 /mode/__pycache__
 /gui/__pycache__
+/__pycache__/camera.cpython-39.pyc
+/__pycache__/cat.cpython-39.pyc
+/__pycache__/chunk.cpython-39.pyc
+/__pycache__/debugger.cpython-39.pyc
+/__pycache__/layer.cpython-39.pyc
+/__pycache__/level.cpython-39.pyc
+/__pycache__/lib.cpython-39.pyc
+/__pycache__/main.cpython-39.pyc
+/__pycache__/particle_manager.cpython-39.pyc
+/__pycache__/player.cpython-39.pyc
+/__pycache__/tile.cpython-39.pyc
