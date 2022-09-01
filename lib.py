@@ -65,7 +65,6 @@ animated_tileset_cache = []
 
 def get_dialog_data(uid):
     # df = pd.read_excel("script/dialogues.xlsx",names=["id","data","text"])
-    # print(df)
     data = (df.loc[df["id"] == uid, "data"]).tolist()
     if not data:
         print("Error : No such data : ", uid)
@@ -79,19 +78,15 @@ def get_dialog_data(uid):
     text = text[0]
     data = json.loads(data)
     text = json.loads(text)
-    # print(text)
 
     for i in range(len(data)):
-        # print("--->",data,"||",i)
         data[i][1]["text"] = text[i]
     return data
 
 
-# print(get_dialog_data("test1"))
 
 
 def post_dialogs_by_id(uid):
-    # print(df)
     data = (df.loc[df["id"] == uid, "data"]).tolist()
     if not data:
         print("Error : No such data : ", uid)
@@ -105,10 +100,8 @@ def post_dialogs_by_id(uid):
     text = text[0]
     data = json.loads(data)
     text = json.loads(text)
-    # print(text)
 
     for i in range(len(data)):
-        # print("--->",data,"||",i)
         data[i][1]["text"] = text[i]
         post_dialog(*data[i])
 
@@ -182,7 +175,6 @@ def level_to_pixel(level_data):
     chunk_size = level_data["chunk_size"]
     size = level_data["size"] * chunk_size
     surf = pygame.surface.Surface((size, size), pygame.SRCALPHA)
-    # print(level_data['size'])
     for layer in reversed(level_data["layers"]):
         if not layer[1]:
             continue
@@ -194,7 +186,6 @@ def level_to_pixel(level_data):
                     tile_pos = [int(i) for i in pos.split(",")]
                     tile_x = tile_pos[0] + (chunk_size * x)
                     tile_y = tile_pos[1] + (chunk_size * y)
-                    # print(x,y,tile_pos,tile_x,tile_y)
                     if surf.get_at((tile_x, tile_y)) != (0, 0, 0, 0):
                         continue
                     surf.set_at((tile_x, tile_y), tile_to_pixel(tile))
@@ -213,7 +204,6 @@ def animated_tileset_get(index, frame, flip=False):
         animated_tileset_cache[index][frame][True] = pygame.transform.flip(
             animated_tileset_cache[index][frame][False], True, False
         )
-        # print("New surface")
     return animated_tileset_cache[index][frame][flip]
 
 
@@ -223,8 +213,6 @@ def tileset_get(index, flip=False):
         tileset_cache[index][True] = pygame.transform.flip(
             tileset_cache[index][False], True, False
         )
-        # print("New surface")
-    # print(animated_tileset_cache)
     return tileset_cache[index][flip]
 
 
@@ -324,7 +312,6 @@ def load_character_sprites():
         return character_sprites
     path_to_character_animation = "Assets/characters/"
 
-    # print("Files and directories in a specified path:")
     for filename in os.listdir(path_to_character_animation):
         dir = os.path.join(path_to_character_animation, filename)
         if not os.path.isdir(dir):
@@ -336,9 +323,7 @@ def load_character_sprites():
                 continue
             if not image_file.split(".")[1] == "png":
                 continue
-            # print(image_file)
             character_sprites[filename][image_file.split(".")[0]] = load_image(
                 image_path, (640, 720)
             )
-    # print(character_sprites)
     return character_sprites

@@ -35,7 +35,7 @@ _display = pygame.surface.Surface(
 
 _clock = pygame.time.Clock()
 pygame.display.set_caption("Dahlia")
-icon = pygame.image.load("icon.png").convert_alpha()
+icon = pygame.image.load("Assets/icons/icon.png").convert_alpha()
 pygame.display.set_icon(icon)
 ################################################################################################
 
