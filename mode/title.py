@@ -68,8 +68,8 @@ class Title(Mode):
 
     def play(self):
         print("play")
-        self.app.load_level(self.app.selected_level),
+        self.app.load_level(self.app.selected_level)
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
-        self.display.fill((30, 35, 45))
+        self.display.fill((30, 38, 45))
         super().update(dt, mouse, mouse_button, mouse_pressed)
