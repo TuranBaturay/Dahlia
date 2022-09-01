@@ -71,5 +71,5 @@ class Title(Mode):
         self.app.load_level(self.app.selected_level)
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
-        self.display.fill((30, 38, 45))
+        self.display.fill((30, 39, 45))
         super().update(dt, mouse, mouse_button, mouse_pressed)
