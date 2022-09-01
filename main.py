@@ -1,17 +1,19 @@
+
 from level import Level
 from player import Player
 from cat import Cat
 import gui as gui
 from debugger import Debugger
 import mode as mode
-from particle_manager import ParticleManager
 from camera import Camera
 import lib as lib
 import pygame
 from pygame.locals import *
 from pygame.math import Vector2
 from math import cos, floor
-import os
+from os.path import isfile as os_isfile
+from os.path import join as os_join
+from os import listdir as os_listdir
 
 
 pygame.mixer.pre_init()
@@ -48,9 +50,9 @@ class App:
         self.screen = _screen
         self.musics = {}
         music_path = "Audio/music/"
-        for file in os.listdir(music_path):
-            f = os.path.join(music_path, file)
-            if os.path.isfile(f) and file[-4:] == ".mp3":
+        for file in os_listdir(music_path):
+            f = os_join(music_path, file)
+            if os_isfile(f) and file[-4:] == ".mp3":
                 self.musics[file[:-4]] = pygame.mixer.Sound(f)
 
         # Rendering
@@ -69,7 +71,7 @@ class App:
         # Class instances
 
         self.camera = Camera(self)
-        self.particle_manager = ParticleManager(self, _display, self.camera)
+        #self.particle_manager = ParticleManager(self, _display, self.camera)
         self.player = Player(_display, self)
         self.cat = Cat(_display, self, self.player)
         self.level = Level(_display, self)

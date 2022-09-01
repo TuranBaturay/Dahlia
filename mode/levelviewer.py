@@ -196,7 +196,7 @@ class LevelViewer(Mode):
             if left.rect.y + 50 + (50 * row) + 30 > left.rect.bottom - 10:
                 row = 0
                 column += 1
-        self.select_level(os.path.basename(self.level_list[0]).split(".")[0])
+        self.select_level(self.app.selected_level)
 
     def select_level(self, level_name):
         for button in lib.get_by_id(self.gui_list, "level_button"):

@@ -71,8 +71,11 @@ class Game(Mode):
     def onkeydown(self, key, caps=None):
         player = self.app.get_character()
         player.on_key_down(key)
+
         if key == K_e:
             self.app.set_mode("edit")
+        elif key ==K_u:
+            lib.post_dialogs_by_id("test1")
         elif key == K_m:
             player.health_level += 10
         elif key == K_n:

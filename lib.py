@@ -1,9 +1,9 @@
 import pygame
 import json
 import os
-import pandas as pd
+from pandas import read_excel as pd_read_excel
 
-df = pd.read_excel("script/dialogues.xlsx", names=["id", "data", "text"])
+df = pd_read_excel("script/dialogues.xlsx", names=["id", "data", "text"])
 
 from pygame.locals import SRCALPHA
 
@@ -11,9 +11,9 @@ pygame.font.init()
 
 fonts = {}
 
-for size in range(20, 128, 2):
-    fonts[size] = pygame.font.SysFont("Courier Typeface", size)
-fonts["title"] = pygame.font.SysFont("Verdana", 100, italic=True)
+for size in [12,18,24,36,48,60,72]:
+    fonts[size] = pygame.font.Font("fonts/default.otf", size)
+fonts["title"] = pygame.font.Font("fonts/verdana.ttf", 100, italic=True)
 
 
 def blend_color(color1, color2):

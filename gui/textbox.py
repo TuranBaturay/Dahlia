@@ -11,7 +11,7 @@ class TextBox(Panel):
         width,
         height,
         text="",
-        font=26,
+        font=18,
         color=[50, 50, 50],
         align="center",
         uid="",

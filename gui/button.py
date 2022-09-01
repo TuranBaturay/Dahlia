@@ -18,7 +18,7 @@ class Button(Panel):
         color=[50, 50, 50],
         uid="",
         border_radius=0,
-        font=26,
+        font=18,
         border=0,
         border_color=[50, 50, 50],
     ):
