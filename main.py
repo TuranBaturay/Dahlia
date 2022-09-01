@@ -1,4 +1,3 @@
-
 from level import Level
 from player import Player
 from cat import Cat
@@ -25,7 +24,7 @@ pygame.mixer.init(channels=4)
 
 
 FLAGS = 0
-#print(pygame.display.list_modes())
+# print(pygame.display.list_modes())
 
 _screen = pygame.display.set_mode(
     (lib.WIDTH, lib.HEIGHT), FLAGS
@@ -75,7 +74,7 @@ class App:
         self.cat = Cat(_display, self, self.player)
         self.level = Level(_display, self)
         self.bgm_channel = pygame.mixer.Channel(1)
-        self.text_input = gui.TextInput(None,100,100)
+        self.text_input = gui.TextInput(None, 100, 100)
 
         # Class setup
         self.debugger.toggle_visibility(False)
@@ -93,21 +92,21 @@ class App:
         # print(len(self.tileset_list))
 
         self.selected_level = "level"
-        
+
         if lib.get_files_in_dir("levels", ".json") == []:
             self.save_level("level")
 
         self.level.load_from_file(self.selected_level)
-        self.input_mode = mode.Input(self,_display)
+        self.input_mode = mode.Input(self, _display)
         self.mode_dict = {
             "dialog": mode.Dialog(self, _display),
             "game": mode.Game(self, _display),
             "settings": mode.Settings(self, _display),
             "level_viewer": mode.LevelViewer(self, _display),
-            "inspector":mode.Inspector(self,_display),
+            "inspector": mode.Inspector(self, _display),
             "edit": mode.Edit(self, _display),
             "title": mode.Title(self, _display),
-            "input": self.input_mode
+            "input": self.input_mode,
         }
 
         print("-" * 30)
@@ -124,18 +123,20 @@ class App:
 
     def get_input(self):
         return self.input_mode
+
     def get_inspector(self):
         return self.mode_dict["inspector"]
 
-    def set_mode(self, mode,stamp = True):
-        if stamp : self.display_stamp = _display.copy()
+    def set_mode(self, mode, stamp=True):
+        if stamp:
+            self.display_stamp = _display.copy()
         self.mode_dict[self.mode].on_exit_mode()
         self.previous_mode = self.mode
         self.mode = mode
         if mode in self.mode_dict:
             self.mode_dict[mode].on_enter_mode()
-        #print("Mode : ",self.mode)
-        #print("Previous mode :",self.previous_mode)
+        # print("Mode : ",self.mode)
+        # print("Previous mode :",self.previous_mode)
 
     def get_current_tileset(self):
         return self.tileset_list[self.edit_info["tileset_index"]]
@@ -152,7 +153,7 @@ class App:
     def vignette_set_func(self, func):
         if self.vignette_close != 0 or self.vignette_open < lib.WIDTH:
             return
-        #print("Vignette set HERE")
+        # print("Vignette set HERE")
         self.vignette_func = func
         self.vignette_close = lib.WIDTH
 
@@ -161,14 +162,14 @@ class App:
         lib.load_tileset()
         self.character_sprites = lib.load_character_sprites()
 
-    def load_level(self, filename, mode="game", source=None,skip_vignette=False):
+    def load_level(self, filename, mode="game", source=None, skip_vignette=False):
         if not filename:
             return False
         # print("HERE 1")
         if not self.level.level_exists(filename):
             return False
         self.vignette_set_source(source)
-        func=lambda: [
+        func = lambda: [
             self.level.load_from_file(filename),
             self.level.load_all(),
             self.player.go_to([16 * 64, 16 * 64], anchor="s"),
@@ -176,14 +177,14 @@ class App:
             self.cat.go_to([16 * 64, 16 * 64], anchor="s"),
             self.camera.set_target(self.player.pos),
             self.set_mode(mode),
-
         ]
         if skip_vignette:
             func()
             return True
-        
+
         self.vignette_set_func(func)
         return True
+
     def save_level(self, path):
         if not path:
             return False
@@ -217,7 +218,7 @@ class App:
     def keyboard_mouse_input(self, keys):
 
         if not self.debugger.show:
-            if keys[K_h] and self.mode in ["game","edit"]:
+            if keys[K_h] and self.mode in ["game", "edit"]:
                 self.show_hitbox = True
             else:
                 self.show_hitbox = False
@@ -257,11 +258,11 @@ class App:
         self.playing_character = char
         self.playing_character.toggle_control(True)
 
-    def update_vignette(self, _screen,dt):
+    def update_vignette(self, _screen, dt):
         if self.vignette_open < lib.WIDTH:
 
             self.vignette_open = (
-                self.vignette_open + 1 + abs(self.vignette_open * (dt*5))
+                self.vignette_open + 1 + abs(self.vignette_open * (dt * 5))
             )
             if self.vignette_open > 2:
                 pygame.draw.circle(
@@ -282,7 +283,7 @@ class App:
                 self.vignette_close,
             )
             self.vignette_close = int(
-                self.vignette_close - 1 - self.vignette_close * (dt*5)
+                self.vignette_close - 1 - self.vignette_close * (dt * 5)
             )
             if self.vignette_close <= 1:
                 self.vignette_close = 0
@@ -335,7 +336,7 @@ class App:
                     if event.key == "ON":
                         self.set_mode("input")
                     elif self.mode == "input":
-                        self.set_mode(self.previous_mode,False)
+                        self.set_mode(self.previous_mode, False)
                         mouse_button = {
                             1: False,
                             2: False,
@@ -369,7 +370,7 @@ class App:
             self.debugger.set("Player state", self.player.state)
 
             self.debugger.set("Camera ", self.camera.int_pos)
-            self.debugger.set("Camera target",self.camera.target)
+            self.debugger.set("Camera target", self.camera.target)
             self.debugger.set("Tiles ", f"total : {self.level.total}")
             info = [layer[1].total for layer in self.level.layers]
             self.debugger.set("Layer totals", info)
@@ -380,7 +381,7 @@ class App:
             if self.mode in self.mode_dict:
                 self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
             _screen.blit(_display, (0, 0))
-            self.update_vignette(_screen,dt)
+            self.update_vignette(_screen, dt)
             self.debugger.update()
 
             pygame.display.flip()

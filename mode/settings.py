@@ -10,7 +10,7 @@ class Settings(Mode):
         super().__init__(app, display)
         self.track = 0
         self.toggle_music.toggle(False)
-        self.dim_surf = pygame.Surface((lib.WIDTH,lib.HEIGHT))
+        self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT))
         self.dim_surf.set_alpha(70)
 
     def init_gui(self):
@@ -175,7 +175,8 @@ class Settings(Mode):
     def onkeydown(self, key, caps=None):
         if key == K_ESCAPE:
             self.app.set_mode(self.app.previous_mode)
+
     def update(self, dt, mouse, mouse_button, mouse_pressed):
-        self.display.blit(self.app.display_stamp,(0,0))
-        self.display.blit(self.dim_surf,(0,0))
+        self.display.blit(self.app.display_stamp, (0, 0))
+        self.display.blit(self.dim_surf, (0, 0))
         return super().update(dt, mouse, mouse_button, mouse_pressed)

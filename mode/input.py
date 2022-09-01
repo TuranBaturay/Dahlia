@@ -1,72 +1,103 @@
-
 from .mode import Mode
 import gui as gui
 import lib as lib
 from pygame.locals import *
 import pygame
+
+
 class Input(Mode):
     def __init__(self, app, display) -> None:
         super().__init__(app, display)
-        self.dim_surf = pygame.Surface((lib.WIDTH,lib.HEIGHT))
+        self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT))
         self.display_stamp = None
-        self.dim_surf.fill((50,50,50))
+        self.dim_surf.fill((50, 50, 50))
         self.dim_surf.set_alpha(70)
         self.on_event = pygame.event.Event(lib.INPUTBOX, key="ON")
         self.off_event = pygame.event.Event(lib.INPUTBOX, key="OFF")
-        self.cursor_rect = pygame.Rect(0,0,3,20)
+        self.cursor_rect = pygame.Rect(0, 0, 3, 20)
         self.blink_speed = 20
         self.animation_counter = 0
         self.max_len = 20
         self.multiline = False
         self.func = None
-    def init_gui(self,width=100,height=100,label="label"):
-        self.gui_list = []
-        panel =gui.Panel(
-            self.gui_list,
-            0,0,width,height,lib.darker_blue,border_radius=10,
-            border=3,border_color=lib.wet_blue
 
+    def init_gui(self, width=100, height=100, label="label"):
+        self.gui_list = []
+        panel = gui.Panel(
+            self.gui_list,
+            0,
+            0,
+            width,
+            height,
+            lib.darker_blue,
+            border_radius=10,
+            border=3,
+            border_color=lib.wet_blue,
         )
-        panel.rect.center = (lib.WIDTH//2,lib.HEIGHT//2)
+        panel.rect.center = (lib.WIDTH // 2, lib.HEIGHT // 2)
         gui.TextBox(
             self.gui_list,
             *panel.rect.topleft,
-            width,30,color=lib.wet_blue,text=label,
-            align="left",border_radius=10
+            width,
+            30,
+            color=lib.wet_blue,
+            text=label,
+            align="left",
+            border_radius=10
         )
         self.db = gui.DialogBox(
             self.gui_list,
-            panel.rect.x+10,panel.rect.y+10,width-20,height-90,
-            align="left",border_radius=10,
-            padding=10,color=lib.darker_blue,
-            border=3,border_color=lib.wet_blue
+            panel.rect.x + 10,
+            panel.rect.y + 10,
+            width - 20,
+            height - 90,
+            align="left",
+            border_radius=10,
+            padding=10,
+            color=lib.darker_blue,
+            border=3,
+            border_color=lib.wet_blue,
         )
-        self.db.rect.move_ip(0,30)
+        self.db.rect.move_ip(0, 30)
         cancel = gui.Button(
             self.gui_list,
-            0,0,100,30,"Cancel",func=self.cancel,border_radius=10,color=lib.wet_blue
+            0,
+            0,
+            100,
+            30,
+            "Cancel",
+            func=self.cancel,
+            border_radius=10,
+            color=lib.wet_blue,
         )
         ok = gui.Button(
             self.gui_list,
-            0,0,40,30,"OK",func=self.validate,color=lib.wet_blue,border_radius=10
+            0,
+            0,
+            40,
+            30,
+            "OK",
+            func=self.validate,
+            color=lib.wet_blue,
+            border_radius=10,
         )
         ok.rect.bottomright = panel.rect.bottomright
-        ok.rect.move_ip(-10,-10)
-        cancel.rect.right = ok.rect.x-10
+        ok.rect.move_ip(-10, -10)
+        cancel.rect.right = ok.rect.x - 10
         cancel.rect.y = ok.rect.y
 
-    def ask_input(self,func,width,height,label="Label",max_len=20,multiline=False):
+    def ask_input(
+        self, func, width, height, label="Label", max_len=20, multiline=False
+    ):
         self.max_len = max_len
         self.multiline = multiline
-        self.init_gui(width,height,label)
+        self.init_gui(width, height, label)
         self.func = func
         pygame.event.post(self.on_event)
         self.place_cursor()
-        
-
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
-        #self.display.blit(self.app.display_stamp,(0,0))
+        # self.display.blit(self.app.display_stamp,(0,0))
         super().update(dt, mouse, mouse_button, mouse_pressed)
         if self.animation_counter > self.blink_speed:
 
@@ -75,8 +106,6 @@ class Input(Mode):
         self.animation_counter += 60 * dt
         if self.animation_counter > self.blink_speed * 2:
             self.animation_counter = 0
-
-
 
     def cancel(self):
         self.clear_text()
@@ -124,14 +153,13 @@ class Input(Mode):
         elif key_str.isalnum():
             if len(self.db.text) < self.max_len:
                 self.db.set_text(self.db.text + key_str)
-        
+
         self.place_cursor()
-                
 
     def on_enter_mode(self):
         pygame.key.set_repeat(300, 20)
         self.display_stamp = self.display.copy()
+
     def on_exit_mode(self):
         pygame.key.set_repeat()
         self.app.display_stamp = self.display_stamp
-        

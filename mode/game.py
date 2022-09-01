@@ -81,6 +81,8 @@ class Game(Mode):
         elif key == K_ESCAPE:
             self.app.set_mode("settings")
         elif key == K_q:
-            player.go_to([i * 64 for i in self.app.get_virtual_mouse_pos()],anchor="nw")
+            player.go_to(
+                [i * 64 for i in self.app.get_virtual_mouse_pos()], anchor="nw"
+            )
         elif key == K_u:
             lib.post_dialogs_by_id("test1")

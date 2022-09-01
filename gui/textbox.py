@@ -17,11 +17,19 @@ class TextBox(Panel):
         uid="",
         border_radius=0,
         border=0,
-        border_color=[50,50,50]
+        border_color=[50, 50, 50],
     ):
         super().__init__(
-            list, x, y, width, height, color, uid=uid, border_radius=border_radius,
-            border=border,border_color=border_color
+            list,
+            x,
+            y,
+            width,
+            height,
+            color,
+            uid=uid,
+            border_radius=border_radius,
+            border=border,
+            border_color=border_color,
         )
         self.color = color
         self.font = font

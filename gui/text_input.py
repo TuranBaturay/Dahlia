@@ -1,5 +1,5 @@
-#DEPRECATED
-#USE 'input' mode instead
+# DEPRECATED
+# USE 'input' mode instead
 
 import pygame
 import gui as gui
@@ -10,6 +10,7 @@ import lib as lib
 class Singleton(type):
     _instances = {}
     _initialized = False
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
@@ -32,9 +33,7 @@ class TextInput(gui.Panel, metaclass=Singleton):
     ):
         if not width and not height:
             return
-        super().__init__(
-            gui_list, 0, 0, 0,0, color=color, border_radius=10
-        )
+        super().__init__(gui_list, 0, 0, 0, 0, color=color, border_radius=10)
         self.animation_counter = 0
         self.blink_speed = blink_speed
         self.cursor_rect = pygame.Rect(0, 0, 3, 20)
@@ -43,21 +42,22 @@ class TextInput(gui.Panel, metaclass=Singleton):
         self.func = None
         self.padding = padding
 
-
         self.asking_input = False
-        self.resize(width,height)
+        self.resize(width, height)
         self.on_event = pygame.event.Event(lib.INPUTBOX, key="ON")
         self.off_event = pygame.event.Event(lib.INPUTBOX, key="OFF", text=self.db.text)
 
+    def resize(self, width, height):
 
-    def resize(self,width,height):
-
-        if width == self.rect.w and height == self.rect.h : return
-        if width or height : 
-            if width : self.rect.w = width
-            if height : self.rect.h = height
+        if width == self.rect.w and height == self.rect.h:
+            return
+        if width or height:
+            if width:
+                self.rect.w = width
+            if height:
+                self.rect.h = height
             self.rect.center = (lib.WIDTH // 2, lib.HEIGHT // 2)
-         
+
         self.buttons = []
         self.panels = []
 
@@ -85,9 +85,16 @@ class TextInput(gui.Panel, metaclass=Singleton):
         )
         super().draw()
 
-
-    def ask_input(self, func=None, label=None, max_len=None,multiline=False,width=None,height=None):
-        self.resize(width,height)
+    def ask_input(
+        self,
+        func=None,
+        label=None,
+        max_len=None,
+        multiline=False,
+        width=None,
+        height=None,
+    ):
+        self.resize(width, height)
         if func:
             self.func = func
         if max_len != None:
@@ -150,9 +157,9 @@ class TextInput(gui.Panel, metaclass=Singleton):
 
     def update(self, dt, mouse_pos, mouse_button, mouse_pressed=None):
         super().update(dt, mouse_pos, mouse_button, mouse_pressed)
-        for panel in self.panels+self.buttons:
+        for panel in self.panels + self.buttons:
             panel.update(dt, mouse_pos, mouse_button, mouse_pressed)
-        
+
         if self.asking_input:
             if self.animation_counter > self.blink_speed:
 

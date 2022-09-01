@@ -20,7 +20,7 @@ class DialogBox(TextBox):
         uid="",
         border_radius=0,
         border=0,
-        border_color=[50,50,50]
+        border_color=[50, 50, 50],
     ):
         self.text_width = width - padding * 2
 
@@ -37,7 +37,7 @@ class DialogBox(TextBox):
             uid=uid,
             border_radius=border_radius,
             border=border,
-            border_color=border_color
+            border_color=border_color,
         )
         self.color = color
         self.font = font

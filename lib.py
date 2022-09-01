@@ -25,8 +25,8 @@ def blend_color(color1, color2):
 FPS = 0
 GRAVITY = 2700
 FRICTION = 0.7
-WIDTH = 1280#1024
-HEIGHT = 720#768
+WIDTH = 1280  # 1024
+HEIGHT = 720  # 768
 INPUTBOX = pygame.event.custom_type()
 DIALOG = pygame.event.custom_type()
 
@@ -37,7 +37,7 @@ animated_tileset_path = "Assets/Tiles/animated_tileset.png"
 
 dark_blue = [44, 62, 80]
 wet_blue = [52, 73, 94]
-light_blue = blend_color(wet_blue,[255,255,255])
+light_blue = blend_color(wet_blue, [255, 255, 255])
 river_blue = [52, 152, 219]
 dark_red = [192, 57, 43]
 dark_green = [39, 174, 96]
@@ -49,16 +49,11 @@ cloud_white = [236, 240, 241]
 turquoise = [26, 188, 156]
 dark_turquoise = blend_color([22, 160, 133], [30, 30, 30])
 darker_red = blend_color(dark_red, [40, 40, 40])
-darker_blue = blend_color(dark_blue,[10,10,10])
-darker_green = blend_color(dark_green,[10,10,10])
+darker_blue = blend_color(dark_blue, [10, 10, 10])
+darker_green = blend_color(dark_green, [10, 10, 10])
 
 
-animated_tile_duration = {
-    0: [15, 60, 15, 60],
-    1: [10] * 7,
-    4: [10] * 10,
-    3: [20]*4
-}
+animated_tile_duration = {0: [15, 60, 15, 60], 1: [10] * 7, 4: [10] * 10, 3: [20] * 4}
 
 interactive_tiles = [8, 9, 27, 28, 23, 22, 14]
 
@@ -120,6 +115,7 @@ def post_dialogs_by_id(uid):
 
 def post_dialog(act, dat):
     pygame.event.post(pygame.event.Event(DIALOG, action=act, data=dat))
+
 
 def get_by_id(gui_list, uid):
 
@@ -230,7 +226,6 @@ def tileset_get(index, flip=False):
         # print("New surface")
     # print(animated_tileset_cache)
     return tileset_cache[index][flip]
-
 
 
 def load_tileset(path=tileset_path, scale=(64, 64)):
