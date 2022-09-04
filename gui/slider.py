@@ -17,6 +17,7 @@ class Slider(Panel):
         range=None,
         color=lib.wet_blue,
         uid="",
+        camera=None
     ):
         self.text_panel = None
         self.disabled = False
@@ -27,7 +28,7 @@ class Slider(Panel):
         self.value = 0
         self.selected = False
         self.color = color
-        super().__init__(list, x, y, width, height, uid=uid)
+        super().__init__(list, x, y, width, height, uid=uid,camera=camera)
         self.slide_rect = pygame.rect.Rect(20, 0, width - 40, 10)
         self.handle = pygame.rect.Rect(0, 0, 10, 30)
         self.slide_rect.centery = height // 2

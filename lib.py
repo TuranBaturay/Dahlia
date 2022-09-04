@@ -22,7 +22,7 @@ def blend_color(color1, color2):
     return color2
 
 
-FPS = 0
+FPS = 60
 GRAVITY = 2700
 FRICTION = 0.7
 WIDTH = 1280  # 1024
@@ -48,6 +48,8 @@ darker_gray = blend_color(dark_gray, [20, 20, 20])
 cloud_white = [236, 240, 241]
 turquoise = [26, 188, 156]
 dark_turquoise = blend_color([22, 160, 133], [30, 30, 30])
+darker_turquoise = blend_color(dark_turquoise, [30, 30, 30])
+
 darker_red = blend_color(dark_red, [40, 40, 40])
 darker_blue = blend_color(dark_blue, [10, 10, 10])
 darker_green = blend_color(dark_green, [10, 10, 10])
@@ -189,6 +191,7 @@ def level_to_pixel(level_data):
                     if surf.get_at((tile_x, tile_y)) != (0, 0, 0, 0):
                         continue
                     surf.set_at((tile_x, tile_y), tile_to_pixel(tile))
+    
     return surf
 
 

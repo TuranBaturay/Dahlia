@@ -19,6 +19,7 @@ class Toggle(Button):
         border=0,
         border_radius=0,
         border_color=[50, 50, 50],
+        camera=None
     ):
         self.text_panel = None
         self.box = pygame.rect.Rect(0, 0, height // 2.5, height // 2.5)
@@ -38,6 +39,7 @@ class Toggle(Button):
             border=border,
             border_color=border_color,
             border_radius=border_radius,
+            camera=camera
         )
         self.draw()
 

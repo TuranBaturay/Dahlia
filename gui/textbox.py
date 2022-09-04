@@ -18,6 +18,7 @@ class TextBox(Panel):
         border_radius=0,
         border=0,
         border_color=[50, 50, 50],
+        camera=None
     ):
         super().__init__(
             list,
@@ -30,6 +31,7 @@ class TextBox(Panel):
             border_radius=border_radius,
             border=border,
             border_color=border_color,
+            camera=camera
         )
         self.color = color
         self.font = font

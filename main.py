@@ -1,19 +1,25 @@
+import sys
+from os.path import isfile as os_isfile
+from os.path import join as os_join
+from os import listdir as os_listdir
+from os import chdir as os_chdir
+
+#Set the directory for export aas .exe
+if getattr(sys, 'frozen', False):
+    os_chdir(sys._MEIPASS)
 
 from level import Level
 from player import Player
 from cat import Cat
-import gui as gui
 from debugger import Debugger
-import mode as mode
+import mode as mode   
 from camera import Camera
 import lib as lib
 import pygame
 from pygame.locals import *
 from pygame.math import Vector2
 from math import cos, floor
-from os.path import isfile as os_isfile
-from os.path import join as os_join
-from os import listdir as os_listdir
+
 
 
 pygame.mixer.pre_init()
@@ -71,12 +77,10 @@ class App:
         # Class instances
 
         self.camera = Camera(self)
-        #self.particle_manager = ParticleManager(self, _display, self.camera)
         self.player = Player(_display, self)
         self.cat = Cat(_display, self, self.player)
         self.level = Level(_display, self)
         self.bgm_channel = pygame.mixer.Channel(1)
-        self.text_input = gui.TextInput(None, 100, 100)
 
         # Class setup
         self.debugger.toggle_visibility(False)
@@ -84,14 +88,11 @@ class App:
         # App Logic
         self.load_ressources()
 
-        self.previous_mode = "title"
-        self.mode = "title"
+        
         self.character_group = pygame.sprite.OrderedUpdates(self.cat, self.player)
         self.playing_character = None
         self.set_character(self.player)
         self.display_stamp = None
-
-        # print(len(self.tileset_list))
 
         self.selected_level = "level"
 
@@ -114,12 +115,15 @@ class App:
         print("-" * 30)
         self.vignette_close = 0
         self.vignette_open = lib.WIDTH
-        self.vignette_func = None
+        self.vignette_func = None 
         self.vignette_source = None
         self.vignette_set_source()
 
         pygame.mixer.set_reserved(1)
         self.virtual_mouse = [0, 0]
+        self.previous_mode = ""
+        self.mode = "title"
+        self.set_mode("title")
 
     ################################################################################################
 
@@ -132,7 +136,7 @@ class App:
     def set_mode(self, mode, stamp=True):
         if stamp:
             self.display_stamp = _display.copy()
-        self.mode_dict[self.mode].on_exit_mode()
+        if self.previous_mode :self.mode_dict[self.mode].on_exit_mode()
         self.previous_mode = self.mode
         self.mode = mode
         if mode in self.mode_dict:
@@ -188,7 +192,7 @@ class App:
         return True
 
     def save_level(self, path):
-        if not path:
+        if not path:                                                                                                                                                                                                                                                                                                                                                                                                                                           
             return False
         self.level.save_to_file(path)
         return True
@@ -296,6 +300,13 @@ class App:
                 self.vignette_open = -200
             _screen.blit(self.effect_surf, (0, 0))
 
+    def get_virtual_pos(self,pos):
+        virtual_pos = [
+                floor((pos[0] + self.camera.int_pos.x) / 64),
+                floor((pos[1] + self.camera.int_pos.y) / 64),
+            ]
+        return virtual_pos
+
     def quit(self):
         self.loop = False
 
@@ -328,12 +339,12 @@ class App:
                     mouse_button[event.button] = True
                 if event.type == lib.DIALOG:
                     if event.action == "RESUME":
-                        self.dialog_info["wait"] = False
+                        self.mode_dict["dialog"].resume()
                     elif event.action == "SAY":
-                        self.dialog_queue.append(event.data)
+                        self.mode_dict["dialog"].queue_append(event.data)
                         if self.mode != "dialog":
                             self.set_mode("dialog")
-                            self.dialog_next()
+                            
                 if event.type == lib.INPUTBOX:
                     if event.key == "ON":
                         self.set_mode("input")
@@ -360,14 +371,13 @@ class App:
             mouse = self.get_mouse_pos()
             mouse_pressed = pygame.mouse.get_pressed()
 
-            self.virtual_mouse = [
-                floor((mouse.x + self.camera.int_pos.x) / 64),
-                floor((mouse.y + self.camera.int_pos.y) / 64),
-            ]
+            self.virtual_mouse = self.get_virtual_pos(mouse)
 
             self.debugger.set("FPS", int(_clock.get_fps()), True)
             self.debugger.set("", str(dt * 1000) + "ms", True)
             self.debugger.set("Resolution", (lib.WIDTH, lib.HEIGHT))
+            self.debugger.set("vm",self.virtual_mouse)
+            self.debugger.set("m",mouse)
             self.debugger.set("Player position", str(self.player.rect.center))
             self.debugger.set("Player state", self.player.state)
 
