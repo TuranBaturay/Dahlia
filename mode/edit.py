@@ -39,18 +39,28 @@ class Edit(Mode):
         self.tool = "brush"
         self.saved = True
         self.shift_key = False
-
+        self.previous_state = None
         super().__init__(app, display)
         self.set_tool("brush")
 
+
     def init_gui(self):
+
+        def release_sf(self:gui.SelectionFrame):
+            self.origin[0] = round(self.origin[0]/64)*64
+            self.origin[1] = round(self.origin[1]/64)*64
+            self.rect.w = round(self.rect.w/64)*64 
+            self.rect.h = round(self.rect.h//64)*64
+            self.rect.topleft = self.origin
+
+
         self.gui_list = []
         self.app.level = self.app.level
         self.sf = gui.SelectionFrame(
             None,width=0,height=0,
-            color=[0,0,0,0],border=3,border_color=lib.sky_blue,camera=self.app.camera
+            color=[0,0,0,0],border=3,border_color=lib.sky_blue,camera=self.app.camera,border_radius=0
         )
-        self.sf.hide()
+        self.sf.on_release = release_sf
         self.main_panel = gui.Panel(
             self.gui_list, 0, 0, 400, lib.HEIGHT, lib.dark_blue, 3, lib.wet_blue, 10
         )
@@ -79,7 +89,7 @@ class Edit(Mode):
         )
         self.save_button =gui.Button(
             self.gui_list,
-            self.main_panel.rect.right - 80,
+            self.main_panel.rect.w -90,
             10,
             70,
             30,
@@ -90,8 +100,12 @@ class Edit(Mode):
                 self.save_button.set_color(lib.darker_turquoise)
             ],
             color=lib.darker_turquoise,
-            align="center",
-            border_radius=10,
+            border_radius=10
+        )
+        gui.Button(
+            self.gui_list,
+            *self.save_button.rect.move(-80,0).topleft,
+            70,30,"Undo",func=self.load_state,color=lib.dark_turquoise,border_radius=10
         )
         tool_panel = gui.Panel(
             self.gui_list,
@@ -209,7 +223,21 @@ class Edit(Mode):
             border_color=lib.light_blue,
             func=self.inspect
         )
+        self.remove_selection_button = gui.Button(
+            self.gui_list,
+            0,
+            0,
+            30,
+            30,
+            "x",
+            border_radius=10,
+            color=lib.darker_red,
+            border=2,
+            border_color=lib.dark_red,
+            func=self.remove_selection
+        )
         self.inspector_button.hide()
+        self.remove_selection_button.hide()
         self.page_button_down.rect.move_ip(5, 5)
         self.page_num.rect.move_ip(5, 5)
 
@@ -281,20 +309,37 @@ class Edit(Mode):
         self.update_layer_selector()
         self.set_page(self.pages[self.current_tileset])
 
+    def save_state(self):
+        self.previous_state = self.app.level.format()
+
+    def load_state(self):
+        if not self.previous_state: return
+        tmp = self.app.level.format()
+        self.app.level.load(self.previous_state)
+        self.update_layer_selector()
+        self.previous_state = tmp
+
     def modify(self):
+        self.save_state()
         self.saved = False
         self.save_button.set_text("Save*")
         self.save_button.set_color(lib.dark_turquoise)
+
     def set_tool(self,tool):
         if not tool in self.tools:return
         self.tool = tool
 
     def inspect(self):
-        tiles = self.get_selection_tiles()
+        tiles = self.get_selection_tiles()[0]
         if not tiles:return
-        print("HERE")
         self.app.get_inspector().select_tile(tiles)
-        self.sf.hide()
+
+    def remove_selection(self):
+        if self.sf.visible and self.sf.rect.size:
+            self.modify()
+            for tile in self.get_selection_tiles():
+                print("removing :",tile,tile.rect.x//64,tile.rect.y//64)
+                self.app.level.remove(tile.rect.x//64,tile.rect.y//64,self.current_layer)
 
     def toggle_collision(self, value):
         self.preview_tile.collision = value
@@ -547,48 +592,55 @@ class Edit(Mode):
             return
         if text in self.app.level.get_layer_list():
             return
-        self.app.level.add_layer(text)
         self.modify()
-
+        self.app.level.add_layer(text)
 
     def remove_layer(self, layer):
+        self.modify()
+
         res = self.app.level.remove_layer(layer)
-        if res:
-            self.modify()
         return res
 
     def swap_layers(self, index1, index2):
+        self.modify()
+
         if not self.app.level.swap_layers(index1, index2):
             return
         self.update_layer_selector()
-        self.modify()
 
     def get_selection_tiles(self):
         if not self.sf.visible : return None
         pos = self.app.get_virtual_pos(self.sf.rect.topleft)
-        print(self.sf.rect.topleft,pos)
-        tiles = self.app.level.get(*pos,self.current_layer)
-        print(tiles)
+        tiles = []
+        for y in range(0,+self.sf.rect.h//64):
+            for x in range(0,self.sf.rect.w//64):
+                tile = self.app.level.get(pos[0]+x,pos[1]+y,self.current_layer)
+                if tile:
+                    tiles.append(tile)
         return tiles
 
     def rename_layer(self, oldname, new_name):
         #print(oldname, new_name)
         if oldname == None or new_name == None:
             return
+        self.modify()
+        
         if not self.app.level.rename_layer(oldname, new_name):
             return
-        self.modify()
+        if oldname == self.current_layer:
+            self.set_layer(new_name)
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
         self.display.fill(lib.dark_turquoise)
-
         self.app.level.update(dt)
         self.app.level.blit_layers(hitbox=self.app.show_hitbox)
         self.app.player.draw()
+
         if self.main_panel.rect.collidepoint(mouse):
             self.hovered_tile = None
+            self.hovered_layer_tile = None
         else:
-            self.hovered_tile = self.app.level.get_first(*self.app.virtual_mouse)
+            #self.hovered_tile = self.app.level.get_first(*self.app.virtual_mouse)
             self.hovered_layer_tile = self.app.level.get(
                 *self.app.virtual_mouse, self.current_layer
             )
@@ -601,7 +653,7 @@ class Edit(Mode):
                 self.preview_border.topleft -= self.app.camera.int_pos
                 self.preview_tile.rect.center = mouse
 
-
+                #draw a preview border where the tile should be
                 pygame.draw.rect(
                     self.display,
                     lib.darker_red
@@ -610,43 +662,39 @@ class Edit(Mode):
                     self.preview_border,
                     3,
                 )
-                if self.hovered_layer_tile:
-                    if mouse_pressed[2]:
-                        self.app.level.remove(*self.app.virtual_mouse, self.current_layer)
-                        self.modify()
-                if self.hovered_layer_tile and (
-                    self.hovered_layer_tile.format() == self.preview_tile.format()
-                ):
-                    self.inspector_button.show()
-                    self.inspector_button.rect.topright = self.preview_border.topright
+                if self.hovered_layer_tile and mouse_pressed[2]:
+                    self.modify()
+                    self.app.level.remove(*self.app.virtual_mouse, self.current_layer)
 
-                else:
-                    self.inspector_button.hide()
-                    self.display.blit(self.preview_tile_img, self.preview_tile.rect)
-                    pygame.draw.rect(
-                        self.display, lib.light_blue, self.preview_tile.rect, 3
-                    )
-                    if mouse_pressed[0]:
-                        self.app.level.set(
-                            *self.app.virtual_mouse,
-                            self.current_layer,
-                            self.preview_tile.format(),
-                        )                    
-                        self.modify()
+                elif mouse_pressed[0] and (not self.hovered_layer_tile or self.preview_tile.format()!=self.hovered_layer_tile.format()):
+                    self.modify()
+                    self.app.level.set(
+                        *self.app.virtual_mouse,
+                        self.current_layer,
+                        self.preview_tile.format(),
+                    )                    
 
-
-                if mouse_button[2]:
+                elif mouse_button[2]:
                     self.preview_tile.flip = not self.preview_tile.flip
                     self.select_tile(self.preview_tile.index)
-        elif self.tool == "select":
-            if (not self.main_panel.rect.collidepoint(mouse) 
-            and not self.inspector_button.rect.collidepoint(mouse)):
-                self.sf.update(dt, (
-                    self.app.virtual_mouse[0] * 64,
-                    self.app.virtual_mouse[1] * 64,
-                ), mouse_button, mouse_pressed)
 
-            if self.sf.rect.size != (0,0):
+                #draw the tile image (with border) centered at mouse pos
+                self.display.blit(self.preview_tile_img, self.preview_tile.rect)
+                pygame.draw.rect(
+                    self.display, lib.light_blue, self.preview_tile.rect, 3
+                )
+        elif self.tool == "select":
+            if (not self.inspector_button.rect.collidepoint(mouse) and not
+            self.remove_selection_button.rect.collidepoint(mouse)):
+                if  self.main_panel.rect.collidepoint(mouse):
+                    self.sf.update_pos()
+                else:
+                    self.sf.update(dt, (
+                        mouse[0] + self.app.camera.int_pos.x,
+                        mouse[1] + self.app.camera.int_pos.y,
+                    ), mouse_button, mouse_pressed)
+
+            if any(x>0 for x in self.sf.rect.size):
                 pygame.draw.rect(
                     self.display,
                     self.sf.border_color,
@@ -655,11 +703,23 @@ class Edit(Mode):
                     self.sf.border_radius,
                 )
         
-            if self.sf.rect.size == (64,64) and self.sf.visible:
-                self.inspector_button.show()
-                self.inspector_button.rect.bottomleft=self.sf.rect.topright
-            else:
+            if  (not self.sf.visible or 
+            self.main_panel.rect.collidepoint(self.sf.rect.topright) or
+            any(x<64 for x in self.sf.rect.size)
+            ):
                 self.inspector_button.hide()
+                self.remove_selection_button.hide()
+            else:
+                if self.sf.rect.size == (64,64):
+                    self.inspector_button.show()
+                    self.inspector_button.rect.bottomleft=self.sf.rect.move(5,-5).topright
+                    self.remove_selection_button.show()
+                    self.remove_selection_button.rect.topright = self.inspector_button.rect.move(-5,0).topleft
+                else:
+                    self.inspector_button.hide()
+                    self.remove_selection_button.rect.bottomleft=self.sf.rect.move(5,-5).topright
+                    self.remove_selection_button.show()
+
         for panel in self.gui_list:
             panel.update(dt, mouse, mouse_button, mouse_pressed)
             if panel.visible and panel.uid not in ["tile_button"]:
@@ -686,8 +746,16 @@ class Edit(Mode):
 
         self.app.camera.update(dt)
         self.app.debugger.set(
-            "Tile", self.hovered_tile.format() if self.hovered_tile else None
-        )
+            "Tile", self.hovered_layer_tile.format() if self.hovered_layer_tile else None)
+
+    def toggle_single_layer(self):
+        self.show_single = not self.show_single
+        for layer in self.app.level.layers:
+            if layer[0] == self.current_layer or not self.show_single:
+                layer[1].show()
+            elif self.show_single:
+                layer[1].hide()
+        self.update_layer_selector()
 
     def onkeydown(self, key, caps=None):
         self.shift_key = caps
@@ -700,14 +768,18 @@ class Edit(Mode):
         elif key == K_ESCAPE:
             self.app.set_mode("settings")
         elif key == K_o:
-            self.show_single = not self.show_single
-
-            for layer in self.app.level.layers:
-                if layer[0] == self.current_layer or not self.show_single:
-                    layer[1].show()
-                elif self.show_single:
-                    layer[1].hide()
-            self.update_layer_selector()
+            self.toggle_single_layer()
+        elif key ==K_c and (pygame.key.get_pressed()[K_LCTRL] or pygame.key.get_pressed()[K_LCTRL]):
+            print("COPY")
+        elif key ==K_v and (pygame.key.get_pressed()[K_LCTRL] or pygame.key.get_pressed()[K_LCTRL]):
+            print("PASTE")
+        elif key ==K_z and (pygame.key.get_pressed()[K_LCTRL] or pygame.key.get_pressed()[K_LCTRL]):
+            print("UNDO")
+            self.load_state()
+        elif self.tool == "select" and key==K_DELETE:
+            self.remove_selection()
+        elif key == K_m:
+            print(self.tool,self.inspector_button.visible,self.remove_selection_button.visible)
 
     def onkeypress(self, keys):
         # print((keys[K_RIGHT]-keys[K_LEFT])*10)
@@ -715,14 +787,11 @@ class Edit(Mode):
         self.camera_target.y = (keys[K_DOWN] - keys[K_UP]) * (10 if self.shift_key else 20)
 
     def on_enter_mode(self):
-        self.inspector_button.hide()
+        #self.inspector_button.hide()
         self.update_layer_selector()
         self.set_layer(self.current_layer)
-        self.sf.hide()
-
 
     def on_exit_mode(self):
         for layer in self.app.level.layers:
             layer[1].show()
-        self.sf.hide()
         

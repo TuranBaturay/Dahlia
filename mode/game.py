@@ -80,7 +80,8 @@ class Game(Mode):
             player.health_level += 10
         elif key == K_n:
             player.health_level -= 10
-
+        elif key == K_k:
+            self.app.screen_shake()
         elif key == K_ESCAPE:
             self.app.set_mode("settings")
         elif key == K_q:
@@ -89,3 +90,5 @@ class Game(Mode):
             )
         elif key == K_u:
             lib.post_dialogs_by_id("test1")
+        elif key == K_y:
+            self.app.set_character(self.app.cat if self.app.get_character() == self.app.player else self.app.player)

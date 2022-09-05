@@ -73,6 +73,7 @@ class Panel(pygame.sprite.Sprite):
                 self.mouse_leave()
 
     def update_pos(self):
+        
         if self.camera:
             self.rect.topleft = self.origin-self.camera.int_pos
 

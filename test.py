@@ -142,7 +142,6 @@ image = pygame.image.load("Assets/sprites/sprites.png").convert_alpha()
 sf = SelectionFrame(screen, None, 0, 0, 100, 100, border=3, border_color=lib.sky_blue)
 mode = "main"
 loop = True
-ti = gui.TextInput(None)
 while loop:
     dt = clock.tick(60) / 1000
     mouse_button = {1: False, 2: False, 3: False, 4: False, 5: False}
@@ -171,35 +170,17 @@ while loop:
                     caps = True
                 else:
                     caps = False
-                ti.key_down(event.key, caps)
             elif event.key == pygame.K_s:
                 if sf.visible:
-                    ti.ask_input(
-                        lambda text: [
-                            OptionFrame(
-                                gui_list,
-                                *sf.rect,
-                                color=[0, 0, 0, 0],
-                                border=3,
-                                text=text
-                            ),
-                            sf.hide(),
-                        ]
-                        if text != None
-                        else None,
-                        "Label",
-                        width=200,
-                        height=200,
-                        multiline=True,
+                    OptionFrame(
+                        gui_list,
+                        *sf.rect,border=3,text="LABEL",color=[0,0,0,0]
                     )
             elif event.key == pygame.K_f:
                 pygame.display.toggle_fullscreen()
     if mode == "input":
         if sf.visible:
             sf.draw()
-        ti.update(dt, pygame.mouse.get_pos(), mouse_button, pygame.mouse.get_pressed())
-        ti.draw()
-        screen.blit(ti.image, ti.rect)
 
     if mode == "main":
         for panel in gui_list:

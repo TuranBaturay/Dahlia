@@ -47,14 +47,37 @@ class Level:
         )
         self.add_layer()
 
-    def save_to_file(self, filename="level"):
-        path = "levels/" + filename + ".json"
+    def format(self):
         data = {}
         data["size"] = self.get_size()
         data["chunk_size"] = self.chunk_size
         data["layers"] = []
         for layer in self.layers:
             data["layers"].append([layer[0], layer[1].format()])
+        return data
+    def load(self,data):
+        if not data:
+            return False
+        print("Loading level")
+        start = pygame.time.get_ticks()
+
+        self.total = 0
+        self.layer_count = 0
+        self.chunk_size = data["chunk_size"]
+        self.size = data["size"]
+        self.layers = []
+        for i, value in enumerate(data["layers"]):
+            id = value[0]
+            layer_data = value[1]
+            self.add_layer(id)
+            if layer_data:
+                self.layers[i][1].load(layer_data)
+        time = (pygame.time.get_ticks() - start) / 1000
+        print(f"level loaded in {time}s")
+        return True
+    def save_to_file(self, filename="level"):
+        path = "levels/" + filename + ".json"
+        data = self.format()
         lib.save_data(path, data)
 
     def level_exists(self, filename):
@@ -69,22 +92,7 @@ class Level:
     def load_from_file(self, filename):
         path = lib.level_path + filename + ".json"
         data = lib.load_data(path)
-        if not data:
-            return False
-        self.total = 0
-        self.layer_count = 0
-        self.chunk_size = data["chunk_size"]
-        self.size = data["size"]
-        self.layers = []
-        for i, value in enumerate(data["layers"]):
-            id = value[0]
-            layer_data = value[1]
-            self.add_layer(id)
-            if layer_data:
-                self.layers[i][1].load(layer_data)
-
-        # self.layer_order = data['layer_order']
-
+        self.load(data)
         return True
 
     def get_layer_list(self):
@@ -247,6 +255,7 @@ class Level:
         return counter
 
     def load_all(self):
+        return
         print("Loading level")
         start = pygame.time.get_ticks()
         time = (pygame.time.get_ticks() - start) / 1000

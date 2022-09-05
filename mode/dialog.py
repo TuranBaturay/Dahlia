@@ -3,7 +3,7 @@ import gui as gui
 import lib as lib
 import pygame
 from math import cos
-
+from pygame.locals import *
 
 class Dialog(Mode):
     def __init__(self, app, display) -> None:
@@ -31,12 +31,13 @@ class Dialog(Mode):
         self.dialog_box = gui.DialogBox(
             self.gui_list,
             100,lib.HEIGHT - 220,
-            400,200,
+            800,200,
             color=lib.dark_blue + [245],
             align="left",
             padding=30,
             border_radius=10,
         )
+        self.dialog_box.rect.centerx = lib.WIDTH//2
         self.dialog_label = gui.TextBox(
             self.gui_list,
             self.dialog_box.rect.x,
@@ -188,6 +189,7 @@ class Dialog(Mode):
                     self.dialog_info["sprite_x"] = 0
 
         if self.dialog_info["panel_x"] != 0:
+            #print(self.dialog_info["panel_x"])
             dx = 0 - self.dialog_info["panel_x"]
             self.dialog_info["panel_x"] += dx * (8 * min(0.1, dt))
             if round(self.dialog_info["panel_x"]) == 0:
@@ -214,3 +216,6 @@ class Dialog(Mode):
             dialog_command(*command[1:])
     def on_enter_mode(self):
         self.next()
+    def onkeydown(self, key, caps=None):
+        if not self.dialog_next_button.disabled and key == K_x:
+            self.next()

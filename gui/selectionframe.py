@@ -25,6 +25,9 @@ class SelectionFrame(gui.Panel):
         self.source = (0, 0)
         self.hide()
 
+    def on_release(self):
+        pass
+
     def update(self, dt, mouse, mouse_button, mouse_pressed=None):
         super().update(dt, mouse, mouse_button, mouse_pressed)
         if self.camera:
@@ -39,6 +42,7 @@ class SelectionFrame(gui.Panel):
             self.set_up = False
             if self.source == mouse_pos:
                 self.hide()
+            self.on_release(self)
             # print("stop",mouse_pressed)
         if self.set_up:
             if mouse_pos[0] < self.source[0]:
@@ -53,6 +57,7 @@ class SelectionFrame(gui.Panel):
             else:
                 self.rect.h = mouse_pos[1] - self.source[1]
                 self.origin.y = self.source[1]
+            self.rect.normalize()
             
         self.update_pos()
 
