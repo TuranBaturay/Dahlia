@@ -75,7 +75,7 @@ class Game(Mode):
         if key == K_e:
             self.app.set_mode("edit")
         elif key ==K_u:
-            lib.post_dialogs_by_id("test1")
+            lib.post_dialogs_by_id("test")
         elif key == K_m:
             player.health_level += 10
         elif key == K_n:
@@ -88,7 +88,5 @@ class Game(Mode):
             player.go_to(
                 [i * 64 for i in self.app.get_virtual_mouse_pos()], anchor="nw"
             )
-        elif key == K_u:
-            lib.post_dialogs_by_id("test1")
         elif key == K_y:
             self.app.set_character(self.app.cat if self.app.get_character() == self.app.player else self.app.player)

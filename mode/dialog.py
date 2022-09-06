@@ -13,9 +13,9 @@ class Dialog(Mode):
         self.default_speed = 0.5
         self.dialog_info = {
             "id": 0,
-            "name": "Placeholder",
-            "mood": "normal",
-            "text": "Placeholder",
+            "name": "",
+            "mood": "",
+            "text": "",
             "counter": -1,
             "image": None,
             "sprite_x": 0,
@@ -96,6 +96,8 @@ class Dialog(Mode):
             self.dialog_info["image"] = None
         self.dialog_info["name"] = name
         self.dialog_info["mood"] = mood
+        
+        if name : self.dialog_label.set_text(name.title())
 
     def next(self):
         self.wait = False
@@ -105,7 +107,7 @@ class Dialog(Mode):
             self.display_stamp = None
             self.dialog_info.update(
                 {
-                    "name": "Placeholder",
+                    "name": "",
                     "counter": -1,
                     "image": None,
                     "sprite_x": 0,
@@ -114,8 +116,8 @@ class Dialog(Mode):
                 }
             )
             return
-        name = self.queue[0]["name"]
-        mood = self.queue[0]["mood"] if "mood" in self.queue[0].keys() else ""
+        name = self.queue[0]["name"] if "name" in self.queue[0] else self.dialog_info["name"]
+        mood = self.queue[0]["mood"] if "mood" in self.queue[0] else self.dialog_info["mood"]
         # print(self.dialog_info['sprite_x'])
         self.set_image(name, mood)
         # print(self.dialog_info['sprite_x'])
@@ -126,9 +128,10 @@ class Dialog(Mode):
         self.dialog_next_button.disable()
         self.dialog_info["counter"] = 0
         self.dialog_info["text_speed"] = self.default_speed
+        self.dialog_box.set_text("")
 
 
-        self.dialog_label.set_text(name.title())
+        
 
 
 
@@ -163,9 +166,10 @@ class Dialog(Mode):
                     + self.dialog_info["text"][new_counter + 1 :]
                 )
 
-            self.dialog_box.set_text(self.dialog_info["text"][:counter])
+            if self.dialog_info["panel_x"]==0:
+                self.dialog_box.set_text(self.dialog_info["text"][:counter])
 
-            if self.dialog_next_button.disabled:
+            if self.dialog_next_button.disabled and self.dialog_info["panel_x"]==0:
                 target = (
                     self.dialog_info["counter"]
                     + self.dialog_info["text_speed"] * 60 * dt
@@ -202,7 +206,6 @@ class Dialog(Mode):
             if panel.visible:
                 if self.dialog_info["panel_x"]:
                     rect.move_ip(self.dialog_info["panel_x"], 0)
-
                 if panel == self.dialog_next_button and not panel.disabled:
                     rect.move_ip(4 * cos(pygame.time.get_ticks() * (1 / 150)), 0)
                     self.display.blit(panel.image, rect)
@@ -210,6 +213,8 @@ class Dialog(Mode):
                         self.display, (lib.sky_blue), rect, 3, panel.border_radius
                     )
                 else:
+                    if panel == self.dialog_label and self.dialog_label.get_text()=="":
+                        continue
                     self.display.blit(panel.image, rect)
 
         if dialog_command:
@@ -217,5 +222,8 @@ class Dialog(Mode):
     def on_enter_mode(self):
         self.next()
     def onkeydown(self, key, caps=None):
-        if not self.dialog_next_button.disabled and key == K_x:
-            self.next()
+        if key == K_x:
+            if not self.dialog_next_button.disabled:
+                self.next()
+            elif '#' not in self.dialog_info["text"][int(self.dialog_info["counter"])+1:] and not self.wait:
+                self.dialog_info["counter"]=len(self.dialog_info["text"])

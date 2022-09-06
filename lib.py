@@ -1,9 +1,12 @@
 import pygame
 import json
 import os
-from pandas import read_excel as pd_read_excel
+from pandas import read_csv as pd_read_csv
 
-df = pd_read_excel("script/dialogues.xlsx", names=["id", "data", "text"])
+df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+
+lang="en"
+langs = list(df)[1:]
 
 from pygame.locals import SRCALPHA
 
@@ -21,6 +24,11 @@ def blend_color(color1, color2):
         color2[i] = min((value + color2[i]) // 2, 255)
     return color2
 
+def set_lang(language):
+    global lang
+    if language not in langs:
+        return
+    lang = language
 
 FPS = 60
 GRAVITY = 2700
@@ -33,7 +41,6 @@ DIALOG = pygame.event.custom_type()
 level_path = "levels/"
 tileset_path = "Assets/Tiles/tileset.png"
 animated_tileset_path = "Assets/Tiles/animated_tileset.png"
-
 
 dark_blue = [44, 62, 80]
 wet_blue = [52, 73, 94]
@@ -66,50 +73,34 @@ animated_tileset_cache = []
 
 
 def get_dialog_data(uid):
-    # df = pd.read_excel("script/dialogues.xlsx",names=["id","data","text"])
-    data = (df.loc[df["id"] == uid, "data"]).tolist()
+    df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+    data = (df.loc[df["ID"] == uid, lang]).tolist()
     if not data:
         print("Error : No such data : ", uid)
         return []
-    data = data[0]
-    text = (df.loc[df["id"] == uid, "text"]).tolist()
-    if not text:
-        print("Error : No such text : ", uid)
-
-        return []
-    text = text[0]
-    data = json.loads(data)
-    text = json.loads(text)
-
-    for i in range(len(data)):
-        data[i][1]["text"] = text[i]
+    #print(data)
     return data
-
-
-
-
-def post_dialogs_by_id(uid):
-    data = (df.loc[df["id"] == uid, "data"]).tolist()
-    if not data:
-        print("Error : No such data : ", uid)
-        return []
-    data = data[0]
-    text = (df.loc[df["id"] == uid, "text"]).tolist()
-    if not text:
-        print("Error : No such text : ", uid)
-
-        return []
-    text = text[0]
-    data = json.loads(data)
-    text = json.loads(text)
-
-    for i in range(len(data)):
-        data[i][1]["text"] = text[i]
-        post_dialog(*data[i])
 
 
 def post_dialog(act, dat):
     pygame.event.post(pygame.event.Event(DIALOG, action=act, data=dat))
+
+
+def post_dialogs_by_id(uid):
+    df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+
+    data = (df.loc[df["ID"] == uid, lang]).tolist()[0]
+
+    if not data:
+        print("Error : No such data : ", uid)
+        return []
+    #print(data)
+    for string in data.split('§'):
+        post_dialog("SAY",{"text" : string})
+
+
+
+
 
 
 def get_by_id(gui_list, uid):

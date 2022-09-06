@@ -317,6 +317,8 @@ class App:
         caps = False
         last_time = 0
         while self.loop:
+            continue_flag = False
+
             time = pygame.time.get_ticks()
             dt = (time - last_time) / 1000
             last_time = time
@@ -332,12 +334,12 @@ class App:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     self.loop = False
-                if (
+                elif (
                     event.type == MOUSEBUTTONDOWN
                     and event.button in mouse_button.keys()
                 ):
                     mouse_button[event.button] = True
-                if event.type == lib.DIALOG:
+                elif event.type == lib.DIALOG:
                     if event.action == "RESUME":
                         self.mode_dict["dialog"].resume()
                     elif event.action == "SAY":
@@ -345,7 +347,7 @@ class App:
                         if self.mode != "dialog":
                             self.set_mode("dialog")
                             
-                if event.type == lib.INPUTBOX:
+                elif event.type == lib.INPUTBOX:
                     if event.key == "ON":
                         self.set_mode("input")
                     elif self.mode == "input":
@@ -357,15 +359,18 @@ class App:
                             4: False,
                             5: False,
                         }
-                if event.type == KEYDOWN:
+                elif event.type == KEYDOWN:
                     if event.mod & pygame.KMOD_SHIFT or event.mod & pygame.KMOD_CAPS:
                         caps = True
                     else:
                         caps = False
                     self.onkeydown(event.key, caps)
-
-            if not pygame.key.get_focused():  # Lower fps when app in Background
+                elif event.type == pygame.WINDOWMOVED:
+                    continue_flag = True
+            if not pygame.key.get_focused() or continue_flag:  # Lower fps when app in Background
                 _clock.tick(10)
+                #print("HERE")
+
                 continue
 
             mouse = self.get_mouse_pos()
