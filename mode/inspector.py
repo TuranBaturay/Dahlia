@@ -65,6 +65,8 @@ class Inspector(Mode):
         if not tile:
             print("Error : None type tile")
             return
+        if self.app.mode != "inspector":
+            self.app.set_mode("inspector")
         if tile.animated:
             self.tile_img = lib.animated_tileset_get(tile.index, 0, tile.flip)
         else:

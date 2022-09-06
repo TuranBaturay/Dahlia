@@ -1,9 +1,12 @@
 import pygame
 import json
 import os
-import pandas as pd
+from pandas import read_csv as pd_read_csv
 
-df = pd.read_excel("script/dialogues.xlsx", names=["id", "data", "text"])
+df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+
+lang="en"
+langs = list(df)[1:]
 
 from pygame.locals import SRCALPHA
 
@@ -11,9 +14,9 @@ pygame.font.init()
 
 fonts = {}
 
-for size in range(20, 128, 2):
-    fonts[size] = pygame.font.SysFont("Courier Typeface", size)
-fonts["title"] = pygame.font.SysFont("Verdana", 100, italic=True)
+for size in [12,18,24,36,48,60,72]:
+    fonts[size] = pygame.font.Font("fonts/default.otf", size)
+fonts["title"] = pygame.font.Font("fonts/verdana.ttf", 100, italic=True)
 
 
 def blend_color(color1, color2):
@@ -21,8 +24,13 @@ def blend_color(color1, color2):
         color2[i] = min((value + color2[i]) // 2, 255)
     return color2
 
+def set_lang(language):
+    global lang
+    if language not in langs:
+        return
+    lang = language
 
-FPS = 0
+FPS = 60
 GRAVITY = 2700
 FRICTION = 0.7
 WIDTH = 1280  # 1024
@@ -33,7 +41,6 @@ DIALOG = pygame.event.custom_type()
 level_path = "levels/"
 tileset_path = "Assets/Tiles/tileset.png"
 animated_tileset_path = "Assets/Tiles/animated_tileset.png"
-
 
 dark_blue = [44, 62, 80]
 wet_blue = [52, 73, 94]
@@ -48,6 +55,8 @@ darker_gray = blend_color(dark_gray, [20, 20, 20])
 cloud_white = [236, 240, 241]
 turquoise = [26, 188, 156]
 dark_turquoise = blend_color([22, 160, 133], [30, 30, 30])
+darker_turquoise = blend_color(dark_turquoise, [30, 30, 30])
+
 darker_red = blend_color(dark_red, [40, 40, 40])
 darker_blue = blend_color(dark_blue, [10, 10, 10])
 darker_green = blend_color(dark_green, [10, 10, 10])
@@ -64,50 +73,34 @@ animated_tileset_cache = []
 
 
 def get_dialog_data(uid):
-    # df = pd.read_excel("script/dialogues.xlsx",names=["id","data","text"])
-    data = (df.loc[df["id"] == uid, "data"]).tolist()
+    df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+    data = (df.loc[df["ID"] == uid, lang]).tolist()
     if not data:
         print("Error : No such data : ", uid)
         return []
-    data = data[0]
-    text = (df.loc[df["id"] == uid, "text"]).tolist()
-    if not text:
-        print("Error : No such text : ", uid)
-
-        return []
-    text = text[0]
-    data = json.loads(data)
-    text = json.loads(text)
-
-    for i in range(len(data)):
-        data[i][1]["text"] = text[i]
+    #print(data)
     return data
-
-
-
-
-def post_dialogs_by_id(uid):
-    data = (df.loc[df["id"] == uid, "data"]).tolist()
-    if not data:
-        print("Error : No such data : ", uid)
-        return []
-    data = data[0]
-    text = (df.loc[df["id"] == uid, "text"]).tolist()
-    if not text:
-        print("Error : No such text : ", uid)
-
-        return []
-    text = text[0]
-    data = json.loads(data)
-    text = json.loads(text)
-
-    for i in range(len(data)):
-        data[i][1]["text"] = text[i]
-        post_dialog(*data[i])
 
 
 def post_dialog(act, dat):
     pygame.event.post(pygame.event.Event(DIALOG, action=act, data=dat))
+
+
+def post_dialogs_by_id(uid):
+    df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+
+    data = (df.loc[df["ID"] == uid, lang]).tolist()[0]
+
+    if not data:
+        print("Error : No such data : ", uid)
+        return []
+    #print(data)
+    for string in data.split('§'):
+        post_dialog("SAY",{"text" : string})
+
+
+
+
 
 
 def get_by_id(gui_list, uid):
@@ -189,6 +182,7 @@ def level_to_pixel(level_data):
                     if surf.get_at((tile_x, tile_y)) != (0, 0, 0, 0):
                         continue
                     surf.set_at((tile_x, tile_y), tile_to_pixel(tile))
+    
     return surf
 
 

@@ -1,17 +1,25 @@
+import sys
+from os.path import isfile as os_isfile
+from os.path import join as os_join
+from os import listdir as os_listdir
+from os import chdir as os_chdir
+
+#Set the directory for export aas .exe
+if getattr(sys, 'frozen', False):
+    os_chdir(sys._MEIPASS)
+
 from level import Level
 from player import Player
 from cat import Cat
-import gui as gui
 from debugger import Debugger
-import mode as mode
-from particle_manager import ParticleManager
+import mode as mode   
 from camera import Camera
 import lib as lib
 import pygame
 from pygame.locals import *
 from pygame.math import Vector2
 from math import cos, floor
-import os
+
 
 
 pygame.mixer.pre_init()
@@ -48,9 +56,9 @@ class App:
         self.screen = _screen
         self.musics = {}
         music_path = "Audio/music/"
-        for file in os.listdir(music_path):
-            f = os.path.join(music_path, file)
-            if os.path.isfile(f) and file[-4:] == ".mp3":
+        for file in os_listdir(music_path):
+            f = os_join(music_path, file)
+            if os_isfile(f) and file[-4:] == ".mp3":
                 self.musics[file[:-4]] = pygame.mixer.Sound(f)
 
         # Rendering
@@ -69,12 +77,10 @@ class App:
         # Class instances
 
         self.camera = Camera(self)
-        self.particle_manager = ParticleManager(self, _display, self.camera)
         self.player = Player(_display, self)
         self.cat = Cat(_display, self, self.player)
         self.level = Level(_display, self)
         self.bgm_channel = pygame.mixer.Channel(1)
-        self.text_input = gui.TextInput(None, 100, 100)
 
         # Class setup
         self.debugger.toggle_visibility(False)
@@ -82,14 +88,11 @@ class App:
         # App Logic
         self.load_ressources()
 
-        self.previous_mode = "title"
-        self.mode = "title"
+        
         self.character_group = pygame.sprite.OrderedUpdates(self.cat, self.player)
         self.playing_character = None
         self.set_character(self.player)
         self.display_stamp = None
-
-        # print(len(self.tileset_list))
 
         self.selected_level = "level"
 
@@ -112,12 +115,15 @@ class App:
         print("-" * 30)
         self.vignette_close = 0
         self.vignette_open = lib.WIDTH
-        self.vignette_func = None
+        self.vignette_func = None 
         self.vignette_source = None
         self.vignette_set_source()
 
         pygame.mixer.set_reserved(1)
         self.virtual_mouse = [0, 0]
+        self.previous_mode = ""
+        self.mode = "title"
+        self.set_mode("title")
 
     ################################################################################################
 
@@ -130,7 +136,7 @@ class App:
     def set_mode(self, mode, stamp=True):
         if stamp:
             self.display_stamp = _display.copy()
-        self.mode_dict[self.mode].on_exit_mode()
+        if self.previous_mode :self.mode_dict[self.mode].on_exit_mode()
         self.previous_mode = self.mode
         self.mode = mode
         if mode in self.mode_dict:
@@ -186,7 +192,7 @@ class App:
         return True
 
     def save_level(self, path):
-        if not path:
+        if not path:                                                                                                                                                                                                                                                                                                                                                                                                                                           
             return False
         self.level.save_to_file(path)
         return True
@@ -294,6 +300,13 @@ class App:
                 self.vignette_open = -200
             _screen.blit(self.effect_surf, (0, 0))
 
+    def get_virtual_pos(self,pos):
+        virtual_pos = [
+                floor((pos[0] + self.camera.int_pos.x) / 64),
+                floor((pos[1] + self.camera.int_pos.y) / 64),
+            ]
+        return virtual_pos
+
     def quit(self):
         self.loop = False
 
@@ -304,6 +317,8 @@ class App:
         caps = False
         last_time = 0
         while self.loop:
+            continue_flag = False
+
             time = pygame.time.get_ticks()
             dt = (time - last_time) / 1000
             last_time = time
@@ -319,20 +334,20 @@ class App:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     self.loop = False
-                if (
+                elif (
                     event.type == MOUSEBUTTONDOWN
                     and event.button in mouse_button.keys()
                 ):
                     mouse_button[event.button] = True
-                if event.type == lib.DIALOG:
+                elif event.type == lib.DIALOG:
                     if event.action == "RESUME":
-                        self.dialog_info["wait"] = False
+                        self.mode_dict["dialog"].resume()
                     elif event.action == "SAY":
-                        self.dialog_queue.append(event.data)
+                        self.mode_dict["dialog"].queue_append(event.data)
                         if self.mode != "dialog":
                             self.set_mode("dialog")
-                            self.dialog_next()
-                if event.type == lib.INPUTBOX:
+                            
+                elif event.type == lib.INPUTBOX:
                     if event.key == "ON":
                         self.set_mode("input")
                     elif self.mode == "input":
@@ -344,28 +359,30 @@ class App:
                             4: False,
                             5: False,
                         }
-                if event.type == KEYDOWN:
+                elif event.type == KEYDOWN:
                     if event.mod & pygame.KMOD_SHIFT or event.mod & pygame.KMOD_CAPS:
                         caps = True
                     else:
                         caps = False
                     self.onkeydown(event.key, caps)
-
-            if not pygame.key.get_focused():  # Lower fps when app in Background
+                elif event.type == pygame.WINDOWMOVED:
+                    continue_flag = True
+            if not pygame.key.get_focused() or continue_flag:  # Lower fps when app in Background
                 _clock.tick(10)
+                #print("HERE")
+
                 continue
 
             mouse = self.get_mouse_pos()
             mouse_pressed = pygame.mouse.get_pressed()
 
-            self.virtual_mouse = [
-                floor((mouse.x + self.camera.int_pos.x) / 64),
-                floor((mouse.y + self.camera.int_pos.y) / 64),
-            ]
+            self.virtual_mouse = self.get_virtual_pos(mouse)
 
             self.debugger.set("FPS", int(_clock.get_fps()), True)
             self.debugger.set("", str(dt * 1000) + "ms", True)
             self.debugger.set("Resolution", (lib.WIDTH, lib.HEIGHT))
+            self.debugger.set("vm",self.virtual_mouse)
+            self.debugger.set("m",mouse)
             self.debugger.set("Player position", str(self.player.rect.center))
             self.debugger.set("Player state", self.player.state)
 

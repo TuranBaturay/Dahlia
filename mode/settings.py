@@ -128,6 +128,19 @@ class Settings(Mode):
             func=lambda: self.app.set_mode("title"),
             color=lib.wet_blue,
         )
+        for x,lang in enumerate(lib.langs):
+            b = gui.Button(
+                self.gui_list,
+                *fullscreen_button.rect.move(x*100,50).topleft,
+                80,30,lang,color=lib.dark_turquoise if lang == lib.lang else lib.wet_blue,
+                uid="lang_button"
+            )
+            b.set_func(
+                lambda b=b,lang=lang: 
+                [button.set_color(lib.dark_turquoise if button == b else lib.wet_blue) for button in lib.get_by_id(self.gui_list,"lang_button")]+
+                [lib.set_lang(lang)]
+            
+            )
 
     def next_track(self):
         self.track += 1

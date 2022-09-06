@@ -36,7 +36,7 @@ class Tile(pygame.sprite.Sprite):
             self.animated = True
             self.animation_indexes = []
             self.animation_offset = randint(0, 100)
-            print(self.animation_duration)
+            #print(self.animation_duration)
             self.animation_duration = (
                 lib.animated_tile_duration[self.index]
                 if self.index in lib.animated_tile_duration.keys()

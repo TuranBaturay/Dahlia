@@ -12,6 +12,7 @@ class Debugger:
         self.visible = True
         self.display_rect = _display.get_rect()
         self.max_y = 0
+        self.font_size = 18
         self.min_x = 0
 
     def hide(self):
@@ -38,7 +39,7 @@ class Debugger:
         self.persistent[key] = persistent
         ypos = 20 + self.keys.index(key) * 20
         string = key + ":" + str(value)
-        string_render = lib.render_text(string, 26, (200, 200, 200))
+        string_render = lib.render_text(string, self.font_size , (200, 200, 200))
         rect = string_render.get_rect()
         self.min_x = min(self.min_x, rect.w - 20)
         self.max_y += 20
@@ -55,7 +56,7 @@ class Debugger:
                 continue
             value = self.data[key]
             string = key + ":" + str(value) if key else str(value)
-            string_render = lib.render_text(string, 26, (20, 20, 20))
+            string_render = lib.render_text(string, self.font_size , (20, 20, 20))
             blit_list.append(
                 [
                     string_render,
@@ -65,7 +66,7 @@ class Debugger:
                     ),
                 ]
             )
-            string_render = lib.render_text(string, 26, (200, 200, 200))
+            string_render = lib.render_text(string, self.font_size , (200, 200, 200))
             blit_list.append(
                 [
                     string_render,

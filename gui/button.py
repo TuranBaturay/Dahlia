@@ -18,9 +18,10 @@ class Button(Panel):
         color=[50, 50, 50],
         uid="",
         border_radius=0,
-        font=26,
+        font=18,
         border=0,
         border_color=[50, 50, 50],
+        camera=None
     ):
         self.text_panel = None
         self.disabled = False
@@ -42,6 +43,7 @@ class Button(Panel):
             border_radius=border_radius,
             border=border,
             border_color=border_color,
+            camera=camera
         )
         self.highlight = self.image.copy()
         pygame.draw.rect(

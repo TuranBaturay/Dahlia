@@ -7,13 +7,13 @@ import pygame
 class DialogBox(TextBox):
     def __init__(
         self,
-        list,
+        gui_list,
         x,
         y,
         width,
         height,
         text="",
-        font=26,
+        font=18,
         color=[50, 50, 50],
         align="center",
         padding=5,
@@ -21,11 +21,12 @@ class DialogBox(TextBox):
         border_radius=0,
         border=0,
         border_color=[50, 50, 50],
+        camera=None
     ):
         self.text_width = width - padding * 2
 
         super().__init__(
-            list,
+            gui_list,
             x,
             y,
             width,
@@ -38,6 +39,7 @@ class DialogBox(TextBox):
             border_radius=border_radius,
             border=border,
             border_color=border_color,
+            camera=camera
         )
         self.color = color
         self.font = font

@@ -217,10 +217,10 @@ class Player(pygame.sprite.Sprite):
 
             if self.state == "fly":
                 self.vel.y += self.speed
-            elif self.state in ["hiding", "hide"]:
-                self.vel.update(0, 0)
         elif self.state == "hiding":
             self.set_state("idle")
+        if self.state in ["hiding", "hide"]:
+            self.vel.update(0, 0)
 
     def movement_x(self, dt):
         self.vel.x *= lib.FRICTION
