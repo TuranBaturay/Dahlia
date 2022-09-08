@@ -180,7 +180,7 @@ class LevelViewer(Mode):
             color=lib.darker_red,
             border_radius=10,
         )
-        self.level_list = lib.get_files_in_dir("levels", ".json")
+        self.level_list = sorted(lib.get_files_in_dir("levels", ".json"))
         row = 0
         column = 0
         for level in self.level_list:

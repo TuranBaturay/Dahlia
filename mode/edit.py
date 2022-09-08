@@ -634,7 +634,8 @@ class Edit(Mode):
     def update(self, dt, mouse, mouse_button, mouse_pressed):
         self.display.fill(lib.dark_turquoise)
         self.app.level.update(dt)
-        self.app.level.blit_layers(hitbox=self.app.show_hitbox)
+        res =self.app.level.blit_layers(hitbox=self.app.show_hitbox)
+        self.app.debugger.set("CPH", str(res))
         self.app.player.draw()
 
         if self.main_panel.rect.collidepoint(mouse):

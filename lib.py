@@ -31,6 +31,7 @@ GRAVITY = 2700
 FRICTION = 0.7
 WIDTH = 1280  # 1024
 HEIGHT = 720  # 768
+DISPLAY_RECT = pygame.Rect(0,0,WIDTH,HEIGHT)
 INPUTBOX = pygame.event.custom_type()
 DIALOG = pygame.event.custom_type()
 

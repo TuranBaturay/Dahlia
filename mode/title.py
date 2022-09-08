@@ -77,6 +77,7 @@ class Title(Mode):
 
     def play(self):
         print("play")
+        self.app.selected_level = "level"
         self.app.load_level(self.app.selected_level)
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
