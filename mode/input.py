@@ -7,6 +7,8 @@ import pygame
 
 class Input(Mode):
     def __init__(self, app, display) -> None:
+        self.font_size = 12
+
         super().__init__(app, display)
         self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT))
         self.display_stamp = None
@@ -41,7 +43,7 @@ class Input(Mode):
             width,
             30,
             color=lib.wet_blue,
-            text=label,
+            text=label,font=self.font_size,
             align="left",
             border_radius=10
         )
@@ -52,6 +54,7 @@ class Input(Mode):
             width - 20,
             height - 90,
             align="left",
+            font=self.font_size,
             border_radius=10,
             padding=10,
             color=lib.darker_blue,
@@ -65,7 +68,7 @@ class Input(Mode):
             0,
             100,
             30,
-            "Cancel",
+            "Cancel",font=self.font_size,
             func=self.cancel,
             border_radius=10,
             color=lib.wet_blue,
@@ -76,7 +79,7 @@ class Input(Mode):
             0,
             40,
             30,
-            "OK",
+            "OK",font=self.font_size,
             func=self.validate,
             color=lib.wet_blue,
             border_radius=10,

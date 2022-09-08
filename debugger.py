@@ -12,7 +12,7 @@ class Debugger:
         self.visible = True
         self.display_rect = _display.get_rect()
         self.max_y = 0
-        self.font_size = lib.default_text_size
+        self.font_size = 12
         self.min_x = 0
         self.line_rect = pygame.Rect(0,0,0,0)
 

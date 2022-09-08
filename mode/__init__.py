@@ -6,3 +6,4 @@ from .levelviewer import LevelViewer
 from .title import Title
 from .input import Input
 from .inspector import Inspector
+from .mode import Mode

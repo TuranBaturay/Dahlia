@@ -1,3 +1,4 @@
+
 import sys
 from os.path import isfile as os_isfile
 from os.path import join as os_join
@@ -20,21 +21,21 @@ from pygame.locals import *
 from pygame.math import Vector2
 from math import cos, floor
 
-
-
 pygame.init()
 pygame.mixer.init(channels=4)
 
-
 FLAGS = 0
-# print(pygame.display.list_modes())
 
 _screen = pygame.display.set_mode(
     (lib.WIDTH, lib.HEIGHT), FLAGS
 )  # main screen - display is blitted on this
-_display = pygame.surface.Surface(
-    (lib.WIDTH, lib.HEIGHT)
-)  # game screen - everything is blitted on here
+
+
+#_display = pygame.surface.Surface(
+#    (lib.WIDTH, lib.HEIGHT)
+#)  # game screen - everything is blitted on here
+
+_display = _screen
 
 _clock = pygame.time.Clock()
 icon = pygame.image.load("Assets/icons/icon.png").convert_alpha()
@@ -60,7 +61,6 @@ class App:
 
         self.effect_surf = pygame.surface.Surface((lib.WIDTH, lib.HEIGHT))
         self.effect_surf.set_colorkey((255, 255, 255))
-        self.dummy_surf = pygame.surface.Surface((64, 64))
 
         self.ratio = [1, 1]
         self.x_offset = 0
@@ -361,6 +361,8 @@ class App:
             if not pygame.key.get_focused() or continue_flag:  # Lower fps when app in Background
                 _clock.tick(10)
                 self.debugger.set("FPS", str(int(_clock.get_fps())), True)
+                self.debugger.update()
+                pygame.display.flip()
 
                 continue
 
@@ -388,7 +390,7 @@ class App:
 
             if self.mode in self.mode_dict:
                 self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
-            _screen.blit(_display, (0, 0))
+            #_screen.blit(_display, (0, 0))
             self.update_vignette(_screen, dt)
             self.debugger.update()
 

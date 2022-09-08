@@ -5,9 +5,9 @@ from pandas import read_csv as pd_read_csv
 
 df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
 
-lang="jp"
+lang="en"
 langs = list(df)[1:]
-default_text_size = 12
+default_text_size = 18
 from pygame.locals import SRCALPHA
 
 pygame.font.init()
@@ -52,7 +52,7 @@ cloud_white = [236, 240, 241]
 turquoise = [26, 188, 156]
 dark_turquoise = blend_color([22, 160, 133], [30, 30, 30])
 darker_turquoise = blend_color(dark_turquoise, [30, 30, 30])
-
+transparent = [0,0,0,0]
 darker_red = blend_color(dark_red, [40, 40, 40])
 darker_blue = blend_color(dark_blue, [10, 10, 10])
 darker_green = blend_color(dark_green, [10, 10, 10])

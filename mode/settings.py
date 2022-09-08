@@ -1,3 +1,4 @@
+
 from .mode import Mode
 import gui as gui
 import lib as lib
@@ -12,130 +13,112 @@ class Settings(Mode):
         self.track = 0
         self.toggle_music.toggle(False)
         self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT))
-        self.dim_surf.fill((10,10,10))
+        self.dim_surf.fill((20,20,20))
         #self.dim_surf.set_alpha(70)
 
     def init_gui(self):
-        settings_panel = gui.Panel(
+        label_color = lib.dark_blue
+        main_panel = gui.Panel(
             self.gui_list,
             50,
             50,
             lib.WIDTH - 100,
             lib.HEIGHT - 100,
             color=lib.dark_blue,
-            border_radius=10,
+            border_radius=10
         )
-
-        title = gui.TextBox(
+        title_label = gui.TextBox(
             self.gui_list,
-            settings_panel.rect.x,
-            settings_panel.rect.y,
-            settings_panel.rect.w,
+            main_panel.rect.x,
+            main_panel.rect.y,
+            main_panel.rect.w,
             30,
             text="Settings",
             color=lib.wet_blue,
             border_radius=10,
         )
-        gui.Button(
+        gui.Button(self.gui_list,
+            *title_label.rect.topleft,
+            30,30,"<",func=lambda : self.app.set_mode(self.app.previous_mode),
+            color=lib.wet_blue,border_radius=10
+        )
+        left_panel = gui.Panel(
             self.gui_list,
-            *title.rect.topleft,
-            60,
-            30,
-            text="<",
-            align="center",
-            func=lambda: self.app.set_mode(self.app.previous_mode),
-            color=lib.wet_blue,
-            border_radius=10,
+            *title_label.rect.move(10,10).bottomleft,
+            main_panel.rect.w //2 -20,main_panel.rect.h -20 - title_label.rect.h,
+            color=lib.transparent,border=3,border_color=lib.wet_blue,border_radius=10
         )
 
-        box = gui.Panel(
+        audio_control = gui.Panel(
             self.gui_list,
-            settings_panel.rect.x + 50,
-            settings_panel.rect.y + 50,
-            600,
-            400,
-            color=lib.wet_blue,
+            *left_panel.rect.move(10,10).topleft,
+            left_panel.rect.w -20,80,border=3,
+            border_color=lib.wet_blue,border_radius=10
         )
-        label = gui.TextBox(
+        audio_label = gui.TextBox(
             self.gui_list,
-            *box.rect.topleft,
-            box.rect.w,
-            30,
-            text="Music",
-            align="left",
-            color=lib.wet_blue,
+            *audio_control.rect.topleft,
+            100,30,text = "Audio",border_radius=10,color=label_color
         )
-        self.toggle_music = gui.Toggle(
+
+        self.toggle_music =gui.Toggle(
             self.gui_list,
-            box.rect.x,
-            label.rect.bottom,
-            160,
-            40,
-            "OFF",
-            func=lambda x: [
-                self.volume_slider.set_value(x),
-                self.toggle_music.set_text("ON" if x else "OFF"),
-            ],
-            color=lib.wet_blue,
-        )
-        gui.Button(
-            self.gui_list,
-            self.toggle_music.rect.right,
-            self.toggle_music.rect.top,
-            20,
-            40,
-            text="<",
-            func=self.prev_track,
-            color=lib.wet_blue,
-        )
-        gui.Button(
-            self.gui_list,
-            self.toggle_music.rect.right + 20,
-            self.toggle_music.rect.top,
-            20,
-            40,
-            text=">",
-            func=self.next_track,
-            color=lib.wet_blue,
+            *audio_label.rect.move(10,10).bottomleft,
+            80,30,"ON",font=12,color=lib.wet_blue,border_radius=10
         )
         self.volume_slider = gui.Slider(
             self.gui_list,
-            self.toggle_music.rect.right + 40,
-            label.rect.bottom,
-            200,
-            40,
-            "Volume",
-            self.set_volume,
-            color=lib.wet_blue,
+            *self.toggle_music.rect.move(10,0).topright,
+            220,30,"Volume",None,border_radius=10,
+            color=lib.wet_blue
         )
-        fullscreen_button = gui.Toggle(
+        self.toggle_music.set_func(
+            func=lambda x: [
+                self.volume_slider.set_value(x),
+                self.toggle_music.set_text("ON" if x else "OFF"),
+            ]
+        )
+        video_control = gui.Panel(
             self.gui_list,
-            box.rect.x,
-            self.toggle_music.rect.bottom + 30,
-            200,
-            40,
-            text="FULLSCREEN",
+            *audio_control.rect.move(0,10).bottomleft,
+            left_panel.rect.w -20,80,border=3,
+            border_color=lib.wet_blue,border_radius=10
+        )
+        video_label = gui.TextBox(
+            self.gui_list,
+            *video_control.rect.topleft,
+            100,30,text = "Video",border_radius=10,color=label_color
+        )
+        gui.Toggle(
+            self.gui_list,
+            *video_label.rect.move(10,10).bottomleft,
+            160,
+            30,
+            text="FULLSCREEN",font=12,
             func=lambda x: [
                 pygame.display.toggle_fullscreen(),
             ],
             color=lib.wet_blue,
+            border_radius=10
         )
-        gui.Button(
+        language_control = gui.Panel(
             self.gui_list,
-            settings_panel.rect.x + 20,
-            settings_panel.rect.bottom - 60,
-            130,
-            40,
-            "Back to Title",
-            func=lambda: self.app.set_mode("title"),
-            color=lib.wet_blue,
+            *video_control.rect.move(0,10).bottomleft,
+            left_panel.rect.w -20,80,border=3,
+            border_color=lib.wet_blue,border_radius=10
+        )
+        language_label = gui.TextBox(
+            self.gui_list,
+            *language_control.rect.topleft,
+            140,30,text = "Language",border_radius=10,color=label_color
         )
         for x,lang in enumerate(lib.langs):
             b = gui.Button(
                 self.gui_list,
-                *fullscreen_button.rect.move(x*100,50).topleft,
-                80,30,lang,color=lib.dark_turquoise if lang == lib.lang else lib.wet_blue,
-                uid="lang_button"
+                *language_label.rect.move(10+x*60,10).bottomleft,
+                50,30,lang.title(),font=12,color=lib.dark_turquoise if lang == lib.lang else lib.wet_blue,
+                uid="lang_button",
+                border_radius=10
             )
             b.set_func(
                 lambda b=b,lang=lang: 
@@ -143,6 +126,12 @@ class Settings(Mode):
                 [lib.set_lang(lang)]
             
             )
+        gui.Button(
+            self.gui_list,
+            left_panel.rect.x + 10, left_panel.rect.bottom-40,120,30,
+            "Back to title",font=12,func=lambda:self.app.set_mode("title"),
+            color=lib.wet_blue,border_radius=10
+        )
 
     def next_track(self):
         self.track += 1
@@ -192,5 +181,5 @@ class Settings(Mode):
             self.app.set_mode(self.app.previous_mode)
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
-        #self.display.blits([[self.app.display_stamp, (0, 0)],[self.dim_surf, (0, 0),None,BLEND_RGB_SUB]])
+        self.display.blits([[self.app.display_stamp, (0, 0)],[self.dim_surf, (0, 0),None,BLEND_RGB_SUB]])
         return super().update(dt, mouse, mouse_button, mouse_pressed)

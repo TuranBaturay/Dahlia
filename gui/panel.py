@@ -10,7 +10,7 @@ class Panel(pygame.sprite.Sprite):
         y=0,
         width=100,
         height=100,
-        color=None,
+        color=lib.transparent,
         border=0,
         border_color=lib.dark_gray,
         border_radius=0,

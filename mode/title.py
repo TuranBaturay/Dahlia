@@ -27,40 +27,49 @@ class Title(Mode):
             upper,
             140,
             30,
-            "PLAY",
+            "Play",
+            font=12,
             color=lib.wet_blue,
             func=self.play,
             border_radius=10,
         )
+        upper += 40
         gui.Button(
             self.gui_list,
             x_center - 80,
-            upper + 40,
+            upper,
             140,
             30,
             "Levels",
+            font=12,
             color=lib.wet_blue,
             func=lambda: self.app.set_mode("level_viewer"),
             border_radius=10,
         )
+        upper += 40
+
         gui.Button(
             self.gui_list,
             x_center - 80,
-            upper + 80,
+            upper,
             140,
             30,
             "Settings",
+            font=12,
             color=lib.wet_blue,
             func=lambda: self.app.set_mode("settings"),
             border_radius=10,
         )
+        upper += 40
+
         gui.Button(
             self.gui_list,
             x_center - 80,
-            upper + 120,
+            upper ,
             140,
             30,
             "Quit",
+            font=12,
             color=lib.wet_blue,
             func=self.app.quit,
             border_radius=10,

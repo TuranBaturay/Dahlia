@@ -13,13 +13,16 @@ class Slider(Panel):
         width,
         height,
         text=None,
+        font=lib.default_text_size,
         func=None,
         range=None,
         color=lib.wet_blue,
         uid="",
-        camera=None
+        camera=None,
+        border_radius = 0,
+        border= 0,
+        border_color = [50,50,50]
     ):
-        self.text_panel = None
         self.disabled = False
         self.func = func
         self.mouse_in_flag = False
@@ -27,18 +30,21 @@ class Slider(Panel):
         self.range = range if range != None else [0, 100, 1]
         self.value = 0
         self.selected = False
-        self.color = color
-        super().__init__(list, x, y, width, height, uid=uid,camera=camera)
-        self.slide_rect = pygame.rect.Rect(20, 0, width - 40, 10)
-        self.handle = pygame.rect.Rect(0, 0, 10, 30)
+        super().__init__(list, x, y, width, height, uid=uid,color=color,
+        camera=camera,border=border,border_color=border_color,
+        border_radius=border_radius)
+        self.slide_rect = pygame.rect.Rect(20, 0, width - 40, height//2.5)
+        self.handle = pygame.rect.Rect(0, 0, 10, height-10)
         self.slide_rect.centery = height // 2
         self.handle.centery = height // 2
+        self.text_panel = None
+
         if text:
             self.text_panel = TextBox(
-                None, 0, 0, width, height, text=text, align="left", color=color
+                None, 10, 0, width, height, text=text,font=font, align="left", color=(0, 0, 0, 0)
             )
-            self.slide_rect.w -= self.text_panel.text_rect.w
-            self.slide_rect.x += self.text_panel.text_rect.w
+            self.slide_rect.w -= self.text_panel.text_rect.w + 10
+            self.slide_rect.x += self.text_panel.text_rect.w + 10
         self.handle.centerx = self.slide_rect.x
         self.draw()
         # self.image.set_alpha(255)
@@ -47,6 +53,7 @@ class Slider(Panel):
         if not self.text_panel:
             return
         self.text_panel.set_text(text)
+        self.text_panel.draw()
         self.draw()
 
     def click(self):
@@ -109,7 +116,7 @@ class Slider(Panel):
             if not mouse_pressed[0]:
                 self.selected = False
                 self.draw()
-            elif self.mouse_in:
+            else:
                 # print(mouse_pressed)
                 self.set_pos_to_mouse(mouse_pos[0])
 
@@ -125,14 +132,18 @@ class Slider(Panel):
 
     def draw(self):
 
-        self.image.fill(self.color)
+        super().draw()
         if self.text_panel:
-            self.text_panel.draw()
-            self.image.blit(self.text_panel.image, (0, 0))
-        pygame.draw.rect(self.image, lib.dark_gray, self.slide_rect, 2)
-        # pygame.draw.rect(self.image,(200,180,200,200),self.slide_rect,4)
-
-        pygame.draw.rect(self.image, lib.river_blue, self.handle)
+            self.image.blit(self.text_panel.image, self.text_panel.rect)
+        pygame.draw.rect(
+            self.image,lib.sky_blue,
+            (
+                *self.slide_rect.topleft,
+                self.handle.right-self.slide_rect.x,self.slide_rect.h
+            ),
+            0,5
+        )
+        pygame.draw.rect(self.image, lib.dark_gray, self.slide_rect, 2,5)
+        pygame.draw.rect(self.image, lib.river_blue, self.handle,0,0)
         if self.mouse_in_handle or self.selected:
-            # print("Handle")
-            pygame.draw.rect(self.image, lib.silver, self.handle, 2)
+            pygame.draw.rect(self.image, lib.silver, self.handle, 2,0)

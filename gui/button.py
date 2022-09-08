@@ -70,14 +70,14 @@ class Button(Panel):
                 0,
                 width,
                 height,
-                text=text,
+                text="",
                 align=align,
-                color=(255, 0, 255),
+                color=(0, 0, 0, 0),
                 border_radius=self.border_radius,
                 font=font,
             )
-            self.text_panel.color = (0, 0, 0, 0)
-
+            
+        self.set_text(text)
         self.draw()
 
     def set_img(self, img):
@@ -90,6 +90,7 @@ class Button(Panel):
         if not self.text_panel:
             return
         self.text_panel.set_text(text)
+        #print("textbox set text : ",text)
         self.draw()
 
     def get_text(self):
@@ -168,7 +169,7 @@ class Button(Panel):
         if self.feedback > 0 or (self.mouse_in and not self.disabled):
 
             if self.text_panel:
-                self.image.blit(self.text_panel.image, (0, 0))
+                self.image.blit(self.text_panel.image, (0,0))
 
             if self.feedback > 0:
                 # print("---------------------CLICK",self.text_panel.text,self.feedback)
@@ -186,4 +187,4 @@ class Button(Panel):
                 )
         else:
             if self.text_panel:
-                self.image.blit(self.text_panel.image, (0, 0))
+                self.image.blit(self.text_panel.image, (0,0))
