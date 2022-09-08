@@ -86,9 +86,9 @@ class LevelViewer(Mode):
             self.gui_list,
             refresh_button.rect.left - 90,
             left.rect.y + 10,
-            80,
             30,
-            text="New",
+            30,
+            text="+",
             color=lib.dark_turquoise,
             border_radius=10,
         )

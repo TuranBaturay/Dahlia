@@ -22,12 +22,7 @@ from math import cos, floor
 
 
 
-pygame.mixer.pre_init()
 pygame.init()
-monitor_info = pygame.display.Info()
-MONITOR_WIDTH = monitor_info.current_w
-MONITOR_HEIGHT = monitor_info.current_h
-
 pygame.mixer.init(channels=4)
 
 
@@ -42,8 +37,8 @@ _display = pygame.surface.Surface(
 )  # game screen - everything is blitted on here
 
 _clock = pygame.time.Clock()
-pygame.display.set_caption("Dahlia")
 icon = pygame.image.load("Assets/icons/icon.png").convert_alpha()
+pygame.display.set_caption("Dahlia")
 pygame.display.set_icon(icon)
 ################################################################################################
 
@@ -177,11 +172,10 @@ class App:
         self.vignette_set_source(source)
         func = lambda: [
             self.level.load_from_file(filename),
-            self.level.load_all(),
             self.player.go_to([16 * 64, 16 * 64], anchor="s"),
             self.player.set_cat(self.cat),
             self.cat.go_to([16 * 64, 16 * 64], anchor="s"),
-            self.camera.set_target(self.player.pos),
+            self.camera.set_source(Vector2(*self.player.pos)),
             self.set_mode(mode),
         ]
         if skip_vignette:
@@ -344,9 +338,6 @@ class App:
                         self.mode_dict["dialog"].resume()
                     elif event.action == "SAY":
                         self.mode_dict["dialog"].queue_append(event.data)
-                        if self.mode != "dialog":
-                            self.set_mode("dialog")
-                            
                 elif event.type == lib.INPUTBOX:
                     if event.key == "ON":
                         self.set_mode("input")
@@ -378,7 +369,7 @@ class App:
 
             self.virtual_mouse = self.get_virtual_pos(mouse)
 
-            self.debugger.set("FPS", int(_clock.get_fps()), True)
+            self.debugger.set("FPS", str(int(_clock.get_fps())), True)
             self.debugger.set("", str(dt * 1000) + "ms", True)
             self.debugger.set("Resolution", (lib.WIDTH, lib.HEIGHT))
             self.debugger.set("vm",self.virtual_mouse)

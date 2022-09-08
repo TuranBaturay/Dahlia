@@ -3,6 +3,7 @@ import gui as gui
 import lib as lib
 import pygame
 from pygame.locals import *
+from pygame import BLEND_SUB
 
 
 class Settings(Mode):
@@ -11,7 +12,8 @@ class Settings(Mode):
         self.track = 0
         self.toggle_music.toggle(False)
         self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT))
-        self.dim_surf.set_alpha(70)
+        self.dim_surf.fill((10,10,10))
+        #self.dim_surf.set_alpha(70)
 
     def init_gui(self):
         settings_panel = gui.Panel(
@@ -190,6 +192,5 @@ class Settings(Mode):
             self.app.set_mode(self.app.previous_mode)
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
-        self.display.blit(self.app.display_stamp, (0, 0))
-        self.display.blit(self.dim_surf, (0, 0))
+        #self.display.blits([[self.app.display_stamp, (0, 0)],[self.dim_surf, (0, 0),None,BLEND_RGB_SUB]])
         return super().update(dt, mouse, mouse_button, mouse_pressed)

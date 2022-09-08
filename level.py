@@ -72,6 +72,7 @@ class Level:
             self.add_layer(id)
             if layer_data:
                 self.layers[i][1].load(layer_data)
+                self.total += self.layers[i][1].total
         time = (pygame.time.get_ticks() - start) / 1000
         print(f"level loaded in {time}s")
         return True
@@ -254,12 +255,6 @@ class Level:
 
         return counter
 
-    def load_all(self):
-        return
-        print("Loading level")
-        start = pygame.time.get_ticks()
-        time = (pygame.time.get_ticks() - start) / 1000
-        print(f"level loaded in {time}s")
 
     def update(self, dt):
         for layer in self.layers:

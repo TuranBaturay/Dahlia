@@ -2,11 +2,11 @@ import pygame
 import lib as lib
 from debugger import Debugger
 import gui as gui
+if not __name__ == "__main__":exit()
 
 pygame.init()
 screen = pygame.display.set_mode((lib.WIDTH, lib.HEIGHT))
 clock = pygame.time.Clock()
-
 
 class OptionFrame(gui.Panel):
     def __init__(

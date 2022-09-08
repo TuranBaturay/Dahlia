@@ -1,6 +1,7 @@
 from .textbox import TextBox
 from .panel import Panel
 import pygame
+import lib as lib
 
 
 class Button(Panel):
@@ -18,7 +19,7 @@ class Button(Panel):
         color=[50, 50, 50],
         uid="",
         border_radius=0,
-        font=18,
+        font=lib.default_text_size,
         border=0,
         border_color=[50, 50, 50],
         camera=None

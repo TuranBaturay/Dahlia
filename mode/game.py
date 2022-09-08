@@ -40,16 +40,7 @@ class Game(Mode):
         self.magic_meter.set_value(self.app.player.magic_level)
 
         self.display.fill((0, 0, 0))
-        self.display.blit(
-            self.bg_scaled,
-            (0, 0),
-            (
-                self.app.camera.int_pos.x / 10,
-                200 + self.app.camera.int_pos.y / 10,
-                lib.WIDTH,
-                lib.HEIGHT,
-            ),
-        )
+
 
         self.app.level.update(dt)
         res = self.app.level.blit_layers(hitbox=self.app.show_hitbox)
