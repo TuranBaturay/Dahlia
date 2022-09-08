@@ -93,7 +93,7 @@ class Edit(Mode):
             10,
             70,
             30,
-            "Save",
+            "Save",font=12,
             func=lambda: [
                 self.app.save_level(self.app.selected_level),
                 self.save_button.set_text("Save"),
@@ -105,7 +105,8 @@ class Edit(Mode):
         gui.Button(
             self.gui_list,
             *self.save_button.rect.move(-80,0).topleft,
-            70,30,"Undo",func=self.load_state,color=lib.dark_turquoise,border_radius=10
+            70,30,"Undo",font=12,func=self.load_state,
+            color=lib.dark_turquoise,border_radius=10
         )
         tool_panel = gui.Panel(
             self.gui_list,
@@ -147,7 +148,7 @@ class Edit(Mode):
             *selector.rect.topleft,
             selector.rect.w,
             30,
-            "Tileset",
+            self.current_tileset,font=12,
             color=lib.wet_blue,
             border_radius=10,
         )
@@ -184,7 +185,7 @@ class Edit(Mode):
             *page_button_panel.rect.topleft,
             30,
             30,
-            text="1",
+            text="1",font=12,
             color=lib.wet_blue,
             border_radius=10,
         )
@@ -216,7 +217,7 @@ class Edit(Mode):
             0,
             30,
             30,
-            "i",
+            "i",font=12,
             border_radius=10,
             color=lib.dark_blue,
             border=2,
@@ -229,7 +230,7 @@ class Edit(Mode):
             0,
             30,
             30,
-            "x",
+            "x",font=12,
             border_radius=10,
             color=lib.darker_red,
             border=2,
@@ -261,7 +262,7 @@ class Edit(Mode):
             selector.rect.bottom + 20,
             360,
             30,
-            "Collision",
+            "Collision",font=12,
             func=lambda value: self.toggle_collision(value),
             color=lib.wet_blue,
             border_radius=10,
@@ -284,7 +285,7 @@ class Edit(Mode):
             *self.layer_selector.rect.topleft,
             360,
             30,
-            "LAYERS",
+            "LAYERS",font=12,
             border_radius=10,
             color=lib.wet_blue,
         )
@@ -294,7 +295,7 @@ class Edit(Mode):
             self.layer_selector.rect.top,
             30,
             30,
-            "+",
+            "+",font=12,
             color=lib.dark_turquoise,
             border_radius=10,
             border=3,
@@ -367,7 +368,7 @@ class Edit(Mode):
                 y_pos,
                 190,
                 30,
-                layer[0],
+                layer[0],font=12,
                 color=lib.dark_turquoise
                 if self.current_layer == layer[0]
                 else lib.wet_blue,
@@ -458,7 +459,7 @@ class Edit(Mode):
                 y_pos,
                 30,
                 30,
-                "x",
+                "x",font=12,
                 color=lib.darker_red,
                 border_radius=10,
                 uid="layer_button",

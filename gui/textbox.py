@@ -10,8 +10,8 @@ class TextBox(Panel):
         y,
         width,
         height,
-        text="",
-        font=18,
+        text=None,
+        font=lib.default_text_size,
         color=[50, 50, 50],
         align="center",
         uid="",
@@ -35,7 +35,7 @@ class TextBox(Panel):
         )
         self.color = color
         self.font = font
-        self.align = align
+        self.align = align if align in ["center","left","right"] else "center"
         self.text = text
         self.padding = 5
         self.text_rect = None
@@ -45,6 +45,17 @@ class TextBox(Panel):
         if color:
             self.color = color
         self.text = text
+        #print(text,"textbox")
+        if self.text :
+            self.text_surf = lib.render_text(self.text, self.font, (200, 200, 200))
+            self.text_rect = self.text_surf.get_rect()
+            self.text_rect.centery = self.rect.h // 2
+            if self.align == "center":
+                self.text_rect.centerx = self.rect.w // 2
+            elif self.align == "left":
+                self.text_rect.left = 0 + self.padding
+            elif self.align == "right":
+                self.text_rect.right = self.rect.w - self.padding
         self.draw()
 
     def get_text(self):
@@ -54,13 +65,4 @@ class TextBox(Panel):
         super().draw()
         if not self.text:
             return
-        self.text_surf = lib.render_text(self.text, self.font, (200, 200, 200))
-        self.text_rect = self.text_surf.get_rect()
-        self.text_rect.centery = self.rect.h // 2
-        if self.align == "center":
-            self.text_rect.centerx = self.rect.w // 2
-        elif self.align == "left":
-            self.text_rect.left = 0 + self.padding
-        elif self.align == "right":
-            self.text_rect.right = self.rect.w - self.padding
         self.image.blit(self.text_surf, self.text_rect)

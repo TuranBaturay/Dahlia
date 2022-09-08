@@ -7,7 +7,7 @@ df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
 
 lang="en"
 langs = list(df)[1:]
-
+default_text_size = 18
 from pygame.locals import SRCALPHA
 
 pygame.font.init()
@@ -15,7 +15,7 @@ pygame.font.init()
 fonts = {}
 
 for size in [12,18,24,36,48,60,72]:
-    fonts[size] = pygame.font.Font("fonts/default.otf", size)
+    fonts[size] = pygame.font.Font("fonts/mochiy.ttf", size)
 fonts["title"] = pygame.font.Font("fonts/verdana.ttf", 100, italic=True)
 
 
@@ -24,13 +24,9 @@ def blend_color(color1, color2):
         color2[i] = min((value + color2[i]) // 2, 255)
     return color2
 
-def set_lang(language):
-    global lang
-    if language not in langs:
-        return
-    lang = language
 
-FPS = 60
+
+FPS = 0
 GRAVITY = 2700
 FRICTION = 0.7
 WIDTH = 1280  # 1024
@@ -56,7 +52,7 @@ cloud_white = [236, 240, 241]
 turquoise = [26, 188, 156]
 dark_turquoise = blend_color([22, 160, 133], [30, 30, 30])
 darker_turquoise = blend_color(dark_turquoise, [30, 30, 30])
-
+transparent = [0,0,0,0]
 darker_red = blend_color(dark_red, [40, 40, 40])
 darker_blue = blend_color(dark_blue, [10, 10, 10])
 darker_green = blend_color(dark_green, [10, 10, 10])
@@ -71,6 +67,11 @@ character_sprites = {}
 tileset_cache = {}
 animated_tileset_cache = []
 
+def set_lang(language):
+    global lang
+    if language not in langs:
+        return
+    lang = language
 
 def get_dialog_data(uid):
     df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
@@ -94,7 +95,6 @@ def post_dialogs_by_id(uid):
     if not data:
         print("Error : No such data : ", uid)
         return []
-    #print(data)
     for string in data.split('§'):
         post_dialog("SAY",{"text" : string})
 

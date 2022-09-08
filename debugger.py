@@ -12,8 +12,9 @@ class Debugger:
         self.visible = True
         self.display_rect = _display.get_rect()
         self.max_y = 0
-        self.font_size = 18
+        self.font_size = 12
         self.min_x = 0
+        self.line_rect = pygame.Rect(0,0,0,0)
 
     def hide(self):
         self.visible = False
@@ -37,9 +38,8 @@ class Debugger:
 
         self.data[key] = value
         self.persistent[key] = persistent
-        ypos = 20 + self.keys.index(key) * 20
         string = key + ":" + str(value)
-        string_render = lib.render_text(string, self.font_size , (200, 200, 200))
+        string_render = lib.render_text(string, self.font_size ,lib.cloud_white)
         rect = string_render.get_rect()
         self.min_x = min(self.min_x, rect.w - 20)
         self.max_y += 20
@@ -52,27 +52,20 @@ class Debugger:
         counter = 20
         for key in self.keys:
             if not self.visible and not self.persistent[key]:
-                counter += 20
+                counter += 22
                 continue
             value = self.data[key]
             string = key + ":" + str(value) if key else str(value)
-            string_render = lib.render_text(string, self.font_size , (20, 20, 20))
-            blit_list.append(
-                [
-                    string_render,
-                    (
-                        self.display_rect.w - string_render.get_rect().w - 20,
-                        counter + 2,
-                    ),
-                ]
-            )
             string_render = lib.render_text(string, self.font_size , (200, 200, 200))
+            self.line_rect.update(*string_render.get_rect())
+            self.line_rect.topleft = (lib.WIDTH - self.line_rect.w-20,counter)
+            pygame.draw.rect(self.display,lib.darker_blue,self.line_rect.inflate(20,0),border_radius=5)
             blit_list.append(
                 [
                     string_render,
-                    (self.display_rect.w - string_render.get_rect().w - 20, counter),
+                    self.line_rect.copy()
                 ]
             )
 
-            counter += 20
-            self.display.blits(blit_list)
+            counter += 22
+        self.display.blits(blit_list)

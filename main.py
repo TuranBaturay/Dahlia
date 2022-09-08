@@ -1,3 +1,4 @@
+
 import sys
 from os.path import isfile as os_isfile
 from os.path import join as os_join
@@ -20,30 +21,25 @@ from pygame.locals import *
 from pygame.math import Vector2
 from math import cos, floor
 
-
-
-pygame.mixer.pre_init()
 pygame.init()
-monitor_info = pygame.display.Info()
-MONITOR_WIDTH = monitor_info.current_w
-MONITOR_HEIGHT = monitor_info.current_h
-
 pygame.mixer.init(channels=4)
 
-
 FLAGS = 0
-# print(pygame.display.list_modes())
 
 _screen = pygame.display.set_mode(
     (lib.WIDTH, lib.HEIGHT), FLAGS
 )  # main screen - display is blitted on this
-_display = pygame.surface.Surface(
-    (lib.WIDTH, lib.HEIGHT)
-)  # game screen - everything is blitted on here
+
+
+#_display = pygame.surface.Surface(
+#    (lib.WIDTH, lib.HEIGHT)
+#)  # game screen - everything is blitted on here
+
+_display = _screen
 
 _clock = pygame.time.Clock()
-pygame.display.set_caption("Dahlia")
 icon = pygame.image.load("Assets/icons/icon.png").convert_alpha()
+pygame.display.set_caption("Dahlia")
 pygame.display.set_icon(icon)
 ################################################################################################
 
@@ -65,7 +61,6 @@ class App:
 
         self.effect_surf = pygame.surface.Surface((lib.WIDTH, lib.HEIGHT))
         self.effect_surf.set_colorkey((255, 255, 255))
-        self.dummy_surf = pygame.surface.Surface((64, 64))
 
         self.ratio = [1, 1]
         self.x_offset = 0
@@ -177,11 +172,10 @@ class App:
         self.vignette_set_source(source)
         func = lambda: [
             self.level.load_from_file(filename),
-            self.level.load_all(),
             self.player.go_to([16 * 64, 16 * 64], anchor="s"),
             self.player.set_cat(self.cat),
             self.cat.go_to([16 * 64, 16 * 64], anchor="s"),
-            self.camera.set_target(self.player.pos),
+            self.camera.set_source(Vector2(*self.player.pos)),
             self.set_mode(mode),
         ]
         if skip_vignette:
@@ -344,9 +338,6 @@ class App:
                         self.mode_dict["dialog"].resume()
                     elif event.action == "SAY":
                         self.mode_dict["dialog"].queue_append(event.data)
-                        if self.mode != "dialog":
-                            self.set_mode("dialog")
-                            
                 elif event.type == lib.INPUTBOX:
                     if event.key == "ON":
                         self.set_mode("input")
@@ -369,7 +360,9 @@ class App:
                     continue_flag = True
             if not pygame.key.get_focused() or continue_flag:  # Lower fps when app in Background
                 _clock.tick(10)
-                #print("HERE")
+                self.debugger.set("FPS", str(int(_clock.get_fps())), True)
+                self.debugger.update()
+                pygame.display.flip()
 
                 continue
 
@@ -378,7 +371,7 @@ class App:
 
             self.virtual_mouse = self.get_virtual_pos(mouse)
 
-            self.debugger.set("FPS", int(_clock.get_fps()), True)
+            self.debugger.set("FPS", str(int(_clock.get_fps())), True)
             self.debugger.set("", str(dt * 1000) + "ms", True)
             self.debugger.set("Resolution", (lib.WIDTH, lib.HEIGHT))
             self.debugger.set("vm",self.virtual_mouse)
@@ -397,7 +390,7 @@ class App:
 
             if self.mode in self.mode_dict:
                 self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
-            _screen.blit(_display, (0, 0))
+            #_screen.blit(_display, (0, 0))
             self.update_vignette(_screen, dt)
             self.debugger.update()
 
