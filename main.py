@@ -360,7 +360,7 @@ class App:
                     continue_flag = True
             if not pygame.key.get_focused() or continue_flag:  # Lower fps when app in Background
                 _clock.tick(10)
-                #print("HERE")
+                self.debugger.set("FPS", str(int(_clock.get_fps())), True)
 
                 continue
 
