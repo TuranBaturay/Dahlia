@@ -16,9 +16,6 @@ class Level:
         self.layers = []
         self.layer_order = []
         self.layer_count = 0
-        self.surf = pygame.surface.Surface((lib.WIDTH, lib.HEIGHT))  # .convert()
-        self.surf.fill((0, 0, 0, 0))
-        self.hitbox_surf = self.surf.copy()
         self.last_camera_value = Vector2(0, 0)
 
         self.num = [
@@ -221,14 +218,18 @@ class Level:
     def blit_layers(self, hitbox=False):
         counter = 0
         blit_list = []
+        hitbox_blit_list = []
 
         for layer in self.layers:
-            if layer[1].total == 0 or not layer[1].visible:
+            if  not layer[1].visible:
                 continue
 
             layer_list, c = layer[1].blit_chunks(self.display, return_list=True)
             blit_list.extend(layer_list)
             counter += c
+
+
+
             if hitbox:
                 blit_rect = self.chunk_border.get_rect()
                 chunk_list = layer[1].get_visible_chunks()
@@ -239,7 +240,7 @@ class Level:
                         for i in [0, 1]
                     ]
                     for tile in chunk_info[2].collision_group:
-                        blit_list.append(
+                        hitbox_blit_list.append(
                             [
                                 self.tile_border,
                                 tile.rect.move(
@@ -248,11 +249,11 @@ class Level:
                             ]
                         )
                     if not blit_rect in [i[1] for i in blit_list]:
-                        blit_list.append([self.chunk_border, blit_rect.copy()])
+                        hitbox_blit_list.append([self.chunk_border, blit_rect.copy()])
 
-        # if hitbox:
         self.display.blits(blit_list)
-
+        if hitbox : 
+            self.display.blits(hitbox_blit_list)
         return counter
 
 

@@ -305,7 +305,6 @@ class App:
         self.loop = False
 
     def main(self, _display, _screen, _clock):
-
         self.loop = True
         mouse_button = {1: False, 2: False, 3: False, 4: False, 5: False}
         caps = False
@@ -393,8 +392,9 @@ class App:
             #_screen.blit(_display, (0, 0))
             self.update_vignette(_screen, dt)
             self.debugger.update()
+            pygame.display.update()
 
-            pygame.display.flip()
+
         pygame.quit()
 
 

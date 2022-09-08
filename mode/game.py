@@ -52,7 +52,7 @@ class Game(Mode):
         )
 
         self.app.level.update(dt)
-        res = self.app.level.blit_layers(hitbox=self.app.show_hitbox)
+        res =self.app.level.blit_layers(hitbox=self.app.show_hitbox)
         self.app.debugger.set("CPH", str(res))
         self.app.character_group.update(dt)
         for panel in self.gui_list:

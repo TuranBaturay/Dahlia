@@ -1,7 +1,6 @@
 import pygame
 from chunk import Chunk
-from lib import WIDTH, HEIGHT
-from pygame.locals import SRCALPHA
+import lib as lib
 
 
 class Layer:
@@ -196,8 +195,8 @@ class Layer:
         return res
 
     def get_visible_chunks(self) -> list[Chunk]:
-        x = int((WIDTH // 2 + self.camera.int_pos.x) // (self.chunk_size * 64))
-        y = int((HEIGHT // 2 + self.camera.int_pos.y) // (self.chunk_size * 64))
+        x = int((lib.WIDTH // 2 + self.camera.int_pos.x) // (self.chunk_size * 64))
+        y = int((lib.HEIGHT // 2 + self.camera.int_pos.y) // (self.chunk_size * 64))
         num = [
             (0, 0),
             (1, 0),
@@ -228,7 +227,6 @@ class Layer:
         counter = 0
         # start_time = time.time()
         chunk_list = self.get_visible_chunks()
-        display_rect = display_surf.get_rect()
         blit_list = []
         for chunk_value in chunk_list:
 
@@ -239,7 +237,7 @@ class Layer:
                 self.scale_factor,
             )
             self.blit_rect.topleft -= self.camera.int_pos
-            if not self.blit_rect.colliderect(display_rect):
+            if not self.blit_rect.colliderect(lib.DISPLAY_RECT):
                 continue
 
             if chunk_value[2].pos in self.chunks_to_draw.keys() or force_update:
