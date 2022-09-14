@@ -2,6 +2,8 @@ import pygame
 import json
 import os
 from pandas import read_csv as pd_read_csv
+from pandas import isnull as pd_isnull
+
 
 df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
 
@@ -26,7 +28,7 @@ def blend_color(color1, color2):
 
 
 
-FPS = 0
+FPS = 60
 GRAVITY = 2700
 FRICTION = 0.7
 WIDTH = 1280  # 1024
@@ -93,7 +95,7 @@ def post_dialogs_by_id(uid):
 
     data = (df.loc[df["ID"] == uid, lang]).tolist()[0]
 
-    if not data:
+    if pd_isnull(data):
         print("Error : No such data : ", uid)
         return []
     for string in data.split('§'):
@@ -278,7 +280,6 @@ def render_text(text, font_size=0, color=(255, 255, 255)):
     size = font.size(text)
     surf = pygame.surface.Surface(size, pygame.SRCALPHA)
     surf.fill((0, 0, 0, 0))
-    # surf.set_colorkey((255, 0, 255))
     if font == fonts["title"]:
         string_render = font.render(text, 1, color)
 

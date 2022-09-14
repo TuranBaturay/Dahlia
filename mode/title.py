@@ -20,11 +20,11 @@ class Title(Mode):
             "title",
             [0, 0, 0, 0],
         )
-        upper = lib.HEIGHT // 2 + 100
+        y_pos = lib.HEIGHT // 2 + 100
         gui.Button(
             self.gui_list,
             x_center - 80,
-            upper,
+            y_pos,
             140,
             30,
             "Play",
@@ -33,11 +33,11 @@ class Title(Mode):
             func=self.play,
             border_radius=10,
         )
-        upper += 40
+        y_pos += 40
         gui.Button(
             self.gui_list,
             x_center - 80,
-            upper,
+            y_pos,
             140,
             30,
             "Levels",
@@ -46,12 +46,12 @@ class Title(Mode):
             func=lambda: self.app.set_mode("level_viewer"),
             border_radius=10,
         )
-        upper += 40
+        y_pos += 40
 
         gui.Button(
             self.gui_list,
             x_center - 80,
-            upper,
+            y_pos,
             140,
             30,
             "Settings",
@@ -60,12 +60,12 @@ class Title(Mode):
             func=lambda: self.app.set_mode("settings"),
             border_radius=10,
         )
-        upper += 40
+        y_pos += 40
 
         gui.Button(
             self.gui_list,
             x_center - 80,
-            upper ,
+            y_pos ,
             140,
             30,
             "Quit",

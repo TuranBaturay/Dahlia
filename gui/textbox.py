@@ -13,6 +13,7 @@ class TextBox(Panel):
         text=None,
         font=lib.default_text_size,
         color=[50, 50, 50],
+        text_color = lib.cloud_white,
         align="center",
         uid="",
         border_radius=0,
@@ -34,20 +35,23 @@ class TextBox(Panel):
             camera=camera
         )
         self.color = color
+        self.text_color = text_color
         self.font = font
         self.align = align if align in ["center","left","right"] else "center"
         self.text = text
         self.padding = 5
         self.text_rect = None
-        self.set_text(text, color)
+        self.set_text(text, color=color,text_color=text_color)
 
-    def set_text(self, text, color=None):
+    def set_text(self, text, color=None,text_color=None):
         if color:
             self.color = color
+        if text_color:
+            self.text_color = text_color
         self.text = text
         #print(text,"textbox")
         if self.text :
-            self.text_surf = lib.render_text(self.text, self.font, (200, 200, 200))
+            self.text_surf = lib.render_text(self.text, self.font, self.text_color)
             self.text_rect = self.text_surf.get_rect()
             self.text_rect.centery = self.rect.h // 2
             if self.align == "center":

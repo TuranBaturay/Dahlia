@@ -2,13 +2,13 @@ from .mode import Mode
 import gui as gui
 import lib as lib
 import pygame
-from math import cos,ceil
+from math import cos
 from pygame.locals import *
 
 class Dialog(Mode):
     def __init__(self, app, display) -> None:
         super().__init__(app, display)
-        self.commands = ["set_speed","set_image","set_delay"]
+        self.commands = ["set_speed","set_image","set_delay","set_color","set_default_color"]
         self.queue = []
         self.default_speed = 0.5
         self.text_speed = self.default_speed
@@ -63,6 +63,11 @@ class Dialog(Mode):
             border_radius=10,
         )
 
+    def set_color(self,color):
+        self.dialog_box.set_text_color(color)
+
+    def set_default_color(self,color):
+        self.dialog_box.set_default_text_color(color)
 
     def set_track(self, track, permanent=False):
         pass
@@ -110,6 +115,7 @@ class Dialog(Mode):
         self.text_speed = self.default_speed
         self.fcounter = 0.0
         self.dialog_box.set_text("")
+        self.dialog_box.set_default_text_color(lib.cloud_white)
 
         if len(self.queue) == 0:
             self.app.set_mode(self.app.previous_mode)
@@ -147,7 +153,6 @@ class Dialog(Mode):
         if self.app.mode != "dialog":
             self.app.set_mode("dialog")
 
-
     def update(self, dt, mouse, mouse_button, mouse_pressed):
 
         self.display.blit(self.app.display_stamp, (0, 0))
@@ -158,15 +163,23 @@ class Dialog(Mode):
                 self.dialog_next_button.enable()
             else:
                 #check commands
-                if self.text[counter]=="#":
-                    next_hashtag_index = self.text.find("#",counter+1)
-                    if next_hashtag_index == -1 :
-                        next_hashtag_index = self.text_len-1
-                    dialog_command = self.text[counter+1:next_hashtag_index].split(";")
-                    if dialog_command[0] not in self.commands : dialog_command = None
-                    self.text = self.text[:counter] + self.text[next_hashtag_index+1:]
+                if self.text[counter]=="(":
+                    command_end = self.text.find(")",counter+1)
+                    if command_end == -1 :
+                        command_end = self.text_len-1
+                        print("Error : Unmatched parenthesis")
+                    dialog_command = self.text[counter+1:command_end].split(",")
+                    if dialog_command[0] not in self.commands : 
+                        print("Error : Unknown/Unauthorized command : ",dialog_command)
+                        dialog_command = None
+                    self.text = self.text[:counter] + self.text[command_end+1:]
                     self.text_len = len(self.text)
-
+                elif self.text[counter]=='#':
+                    self.fcounter = counter= self.text.find(' ',counter+1)
+                    if self.fcounter < 0  :
+                        self.fcounter = counter = self.text_len
+                elif self.text[counter]=='\\':
+                    self.fcounter = counter= counter+1
                 if self.gui_offset == 0:
                     self.dialog_box.set_text(self.text[:counter+1])
 
@@ -180,10 +193,7 @@ class Dialog(Mode):
             if round(self.sprite_offset) == 0:
                 self.sprite_offset = 0
 
-
         if self.gui_offset != 0:
-            
-            #print(self.dialog_info["panel_x"])
             dx = 0 - self.gui_offset
             self.gui_offset += dx * (8 * min(0.1, dt))
             if round(self.gui_offset) == 0:
@@ -212,8 +222,11 @@ class Dialog(Mode):
                     pygame.draw.rect(
                         self.display, (lib.sky_blue), rect, 3, panel.border_radius
                     )
+                    
         if dialog_command:
+            print("recieved command : ",dialog_command)
             getattr(self,dialog_command[0])(*dialog_command[1:])
+
 
     def on_enter_mode(self):
         self.next()
@@ -222,5 +235,5 @@ class Dialog(Mode):
         if key == K_x:
             if not self.dialog_next_button.disabled:
                 self.next()
-            elif '#' not in self.text[int(self.fcounter)+1:] and not self.wait:
+            elif '(' not in self.text[int(self.fcounter)+1:] and not self.wait:
                 self.fcounter=self.text_len-1

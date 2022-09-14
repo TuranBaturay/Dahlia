@@ -181,5 +181,9 @@ class Settings(Mode):
             self.app.set_mode(self.app.previous_mode)
 
     def update(self, dt, mouse, mouse_button, mouse_pressed):
-        self.display.blits([[self.app.display_stamp, (0, 0)],[self.dim_surf, (0, 0),None,BLEND_RGB_SUB]])
+        #self.display.blits([[self.app.display_stamp, (0, 0)],[self.dim_surf, (0, 0),None,BLEND_RGB_SUB]])
+        self.display.blit(self.dim_surf,(0,0))
         return super().update(dt, mouse, mouse_button, mouse_pressed)
+    def on_enter_mode(self):
+        self.dim_surf.fill((120,120,120))
+        self.dim_surf.blit(self.app.display_stamp,(0,0),None,pygame.BLEND_MULT)

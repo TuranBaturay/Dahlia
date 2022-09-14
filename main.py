@@ -5,7 +5,7 @@ from os.path import join as os_join
 from os import listdir as os_listdir
 from os import chdir as os_chdir
 
-#Set the directory for export aas .exe
+# Set the directory for export aas .exe
 if getattr(sys, 'frozen', False):
     os_chdir(sys._MEIPASS)
 
@@ -13,7 +13,7 @@ from level import Level
 from player import Player
 from cat import Cat
 from debugger import Debugger
-import mode as mode   
+import mode as mode
 from camera import Camera
 import lib as lib
 import pygame
@@ -31,9 +31,9 @@ _screen = pygame.display.set_mode(
 )  # main screen - display is blitted on this
 
 
-#_display = pygame.surface.Surface(
+# _display = pygame.surface.Surface(
 #    (lib.WIDTH, lib.HEIGHT)
-#)  # game screen - everything is blitted on here
+# )  # game screen - everything is blitted on here
 
 _display = _screen
 
@@ -83,8 +83,8 @@ class App:
         # App Logic
         self.load_ressources()
 
-        
-        self.character_group = pygame.sprite.OrderedUpdates(self.cat, self.player)
+        self.character_group = pygame.sprite.OrderedUpdates(
+            self.cat, self.player)
         self.playing_character = None
         self.set_character(self.player)
         self.display_stamp = None
@@ -110,7 +110,7 @@ class App:
         print("-" * 30)
         self.vignette_close = 0
         self.vignette_open = lib.WIDTH
-        self.vignette_func = None 
+        self.vignette_func = None
         self.vignette_source = None
         self.vignette_set_source()
 
@@ -131,7 +131,8 @@ class App:
     def set_mode(self, mode, stamp=True):
         if stamp:
             self.display_stamp = _display.copy()
-        if self.previous_mode :self.mode_dict[self.mode].on_exit_mode()
+        if self.previous_mode:
+            self.mode_dict[self.mode].on_exit_mode()
         self.previous_mode = self.mode
         self.mode = mode
         if mode in self.mode_dict:
@@ -170,7 +171,8 @@ class App:
         if not self.level.level_exists(filename):
             return False
         self.vignette_set_source(source)
-        func = lambda: [
+
+        def func(): return [
             self.level.load_from_file(filename),
             self.player.go_to([16 * 64, 16 * 64], anchor="s"),
             self.player.set_cat(self.cat),
@@ -186,7 +188,7 @@ class App:
         return True
 
     def save_level(self, path):
-        if not path:                                                                                                                                                                                                                                                                                                                                                                                                                                           
+        if not path:
             return False
         self.level.save_to_file(path)
         return True
@@ -294,24 +296,23 @@ class App:
                 self.vignette_open = -200
             _screen.blit(self.effect_surf, (0, 0))
 
-    def get_virtual_pos(self,pos):
+    def get_virtual_pos(self, pos):
         virtual_pos = [
-                floor((pos[0] + self.camera.int_pos.x) / 64),
-                floor((pos[1] + self.camera.int_pos.y) / 64),
-            ]
+            floor((pos[0] + self.camera.int_pos.x) / 64),
+            floor((pos[1] + self.camera.int_pos.y) / 64),
+        ]
         return virtual_pos
 
     def quit(self):
         self.loop = False
 
-    def main(self, _display, _screen, _clock):
+    def main(self, _screen, _clock):
         self.loop = True
         mouse_button = {1: False, 2: False, 3: False, 4: False, 5: False}
         caps = False
         last_time = 0
         while self.loop:
             continue_flag = False
-
             time = pygame.time.get_ticks()
             dt = (time - last_time) / 1000
             last_time = time
@@ -373,8 +374,8 @@ class App:
             self.debugger.set("FPS", str(int(_clock.get_fps())), True)
             self.debugger.set("", str(dt * 1000) + "ms", True)
             self.debugger.set("Resolution", (lib.WIDTH, lib.HEIGHT))
-            self.debugger.set("vm",self.virtual_mouse)
-            self.debugger.set("m",mouse)
+            self.debugger.set("vm", self.virtual_mouse)
+            self.debugger.set("m", mouse)
             self.debugger.set("Player position", str(self.player.rect.center))
             self.debugger.set("Player state", self.player.state)
 
@@ -388,16 +389,16 @@ class App:
             self.keyboard_mouse_input(keys)
 
             if self.mode in self.mode_dict:
-                self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
+                self.mode_dict[self.mode].update(
+                    dt, mouse, mouse_button, mouse_pressed)
             #_screen.blit(_display, (0, 0))
             self.update_vignette(_screen, dt)
             self.debugger.update()
             pygame.display.update()
-
 
         pygame.quit()
 
 
 if __name__ == "__main__":
     game = App(_display)
-    game.main(_display, _screen, _clock)
+    game.main(_screen, _clock)
