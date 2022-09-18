@@ -28,6 +28,9 @@ class Dialog(Mode):
         self.wait = False
         self.pause_event = pygame.event.Event(lib.DIALOG, action="PAUSE")
         self.resume_event = pygame.event.Event(lib.DIALOG, action="RESUME")
+        self.exiting = False
+        self.x_offset_target = 0
+        self.exit_event = None
 
     def init_gui(self):
         self.dialog_box = gui.DialogBox(
@@ -118,7 +121,6 @@ class Dialog(Mode):
         self.dialog_box.set_default_text_color(lib.cloud_white)
 
         if len(self.queue) == 0:
-            self.app.set_mode(self.app.previous_mode)
             self.display_stamp = None
             self.dialog_info = {
                 "id": 0,
@@ -126,13 +128,9 @@ class Dialog(Mode):
                 "mood": "",
                 "text": "",
             }
-            self.gui_offset = - lib.WIDTH
-            self.sprite_offset = 0
             self.image = None
             self.text = ""
-
-
-
+            self.app.set_mode(self.app.previous_mode)
             return
         name = self.queue[0]["name"] if "name" in self.queue[0] else self.dialog_info["name"]
         mood = self.queue[0]["mood"] if "mood" in self.queue[0] else self.dialog_info["mood"]
@@ -174,7 +172,7 @@ class Dialog(Mode):
                         dialog_command = None
                     self.text = self.text[:counter] + self.text[command_end+1:]
                     self.text_len = len(self.text)
-                elif self.text[counter]=='#':
+                elif self.text[counter]=='{':
                     self.fcounter = counter= self.text.find(' ',counter+1)
                     if self.fcounter < 0  :
                         self.fcounter = counter = self.text_len
@@ -187,37 +185,23 @@ class Dialog(Mode):
 
         # DISPLAY CHARACTER SPRITE
 
-        if self.sprite_offset != 0:
-            dx = 0 - self.sprite_offset
-            self.sprite_offset += dx * (8 * min(dt, 0.1))
-            if round(self.sprite_offset) == 0:
-                self.sprite_offset = 0
-
-        if self.gui_offset != 0:
-            dx = 0 - self.gui_offset
-            self.gui_offset += dx * (8 * min(0.1, dt))
-            if round(self.gui_offset) == 0:
-                self.gui_offset = 0
-
         # DISPLAY GUI
         if self.image:
             self.display.blit(
-                self.image, (self.sprite_offset, 0)
+                self.image, (0, 0)
             )
 
         for panel in self.gui_list:
             panel.update(dt, mouse, mouse_button, mouse_pressed)
             if panel.visible:
-                rect = panel.rect.move(self.gui_offset,0)
                 if panel == self.dialog_label and self.dialog_label.get_text()=="":
                     continue
 
                 elif panel != self.dialog_next_button or  panel.disabled:
-                    self.display.blit(panel.image, rect)
+                    self.display.blit(panel.image, panel.rect)
                 else: #NEXT BUTTON
                     
-
-                    rect = rect.move(4 * cos(pygame.time.get_ticks() * (1 / 150)), 0)
+                    rect = panel.rect.move(4 * cos(pygame.time.get_ticks() * (1 / 150)), 0)
                     self.display.blit(panel.image, rect)
                     pygame.draw.rect(
                         self.display, (lib.sky_blue), rect, 3, panel.border_radius
@@ -229,7 +213,14 @@ class Dialog(Mode):
 
 
     def on_enter_mode(self):
+        super().on_enter_mode()
         self.next()
+
+    def on_exit_mode(self,exit_event):
+        self.exiting = True
+        self.x_offset_target = -lib.WIDTH
+        super().on_exit_mode(exit_event)
+        print("test")
 
     def onkeydown(self, key, caps=None):
         if key == K_x:

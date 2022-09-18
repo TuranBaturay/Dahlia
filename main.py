@@ -128,11 +128,14 @@ class App:
     def get_inspector(self):
         return self.mode_dict["inspector"]
 
-    def set_mode(self, mode, stamp=True):
+    def set_mode(self, mode, stamp=True,call_exit=True):
+
+        if self.previous_mode and call_exit:
+            self.mode_dict[self.mode].on_exit_mode(pygame.event.Event(lib.SET_MODE,args=[mode,stamp,False]))
+            
+            return
         if stamp:
-            self.display_stamp = _display.copy()
-        if self.previous_mode:
-            self.mode_dict[self.mode].on_exit_mode()
+            self.display_stamp = self.screen.copy()
         self.previous_mode = self.mode
         self.mode = mode
         if mode in self.mode_dict:
@@ -174,9 +177,9 @@ class App:
 
         def func(): return [
             self.level.load_from_file(filename),
-            self.player.go_to([16 * 64, 16 * 64], anchor="s"),
+            self.player.go_to(self.level.spawn_point, anchor="s"),
             self.player.set_cat(self.cat),
-            self.cat.go_to([16 * 64, 16 * 64], anchor="s"),
+            self.cat.go_to(self.player.rect.midbottom, anchor="s"),
             self.camera.set_source(Vector2(*self.player.pos)),
             self.set_mode(mode),
         ]
@@ -211,11 +214,6 @@ class App:
 
     def get_virtual_mouse_pos(self):
         return self.virtual_mouse
-
-    def cache_surface(self, scale):
-        if not str(scale) in self.cached_surfaces.keys():
-            self.cached_surfaces[str(scale)] = pygame.surface.Surface((scale))
-        return self.cached_surfaces[str(scale)]
 
     def keyboard_mouse_input(self, keys):
 
@@ -333,6 +331,8 @@ class App:
                     and event.button in mouse_button.keys()
                 ):
                     mouse_button[event.button] = True
+                elif event.type == lib.SET_MODE:
+                    self.set_mode(*event.args)
                 elif event.type == lib.DIALOG:
                     if event.action == "RESUME":
                         self.mode_dict["dialog"].resume()
@@ -389,6 +389,7 @@ class App:
             self.keyboard_mouse_input(keys)
 
             if self.mode in self.mode_dict:
+                #print(self.mode)
                 self.mode_dict[self.mode].update(
                     dt, mouse, mouse_button, mouse_pressed)
             #_screen.blit(_display, (0, 0))

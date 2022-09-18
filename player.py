@@ -39,6 +39,9 @@ class Player(pygame.sprite.Sprite):
         self.run_frame = 0
 
         self.interaction_feedback = 0
+        self.interaction_alpha_target = 255
+
+        #Interaction surface 'X' button
         self.interaction_surf = pygame.surface.Surface((64, 64))
         self.interaction_surf.set_colorkey((0, 0, 0))
         pygame.draw.circle(
@@ -58,6 +61,8 @@ class Player(pygame.sprite.Sprite):
 
         pygame.draw.line(self.interaction_surf, lib.cloud_white, (28, 28), (36, 36), 3)
         pygame.draw.line(self.interaction_surf, lib.cloud_white, (36, 28), (28, 36), 3)
+
+        self.interaction_surf.set_alpha(self.interaction_alpha_target)
 
         self.sfx = {
             "jump": pygame.mixer.Sound("Audio/sfx/jump.wav"),
@@ -333,6 +338,7 @@ class Player(pygame.sprite.Sprite):
             if self.interaction_feedback <= 1:
                 self.interaction_feedback = 0
         if not self.interaction_feedback:
+
             self.interact = None
             if self.control:
                 if (
@@ -349,9 +355,19 @@ class Player(pygame.sprite.Sprite):
                     for tile in tile_list:
                         if tile and tile.interactible:
                             self.interact = tile
+                if self.interact:
+                    delta = abs(self.rect.centerx - self.interact.rect.centerx)
+                    if delta <= 16:
+                        self.interaction_alpha_target = 255
+                    else:
+                        self.interaction_alpha_target = 120 
+
+                else:
+                    self.interaction_alpha_target = 0
+                        
 
         self.animation_counter += 60 * dt
-
+        self.interaction_surf.set_alpha(self.interaction_feedback + self.interaction_surf.get_alpha() + 0.2*(self.interaction_alpha_target-self.interaction_surf.get_alpha()))
         if self.animation_counter >= len(self.animation_dict[self.state]):
             self.animation_counter = 0
             self.run_frame = 0
@@ -374,6 +390,7 @@ class Player(pygame.sprite.Sprite):
         self.display.blit(self.image, self.draw_rect)
 
         if self.interact or self.interaction_feedback:
+
             interact_rect = self.interact.rect.move(
                 -self.camera.int_pos.x, -self.camera.int_pos.y
             )

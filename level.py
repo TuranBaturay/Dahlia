@@ -17,6 +17,7 @@ class Level:
         self.layer_order = []
         self.layer_count = 0
         self.last_camera_value = Vector2(0, 0)
+        self.spawn_point = Vector2(32,32)
 
         self.num = [
             (0, 0),
@@ -44,14 +45,19 @@ class Level:
         )
         self.add_layer()
 
+    def set_spawn_point(self,x,y):
+        self.spawn_point.update(x,y)
+
     def format(self):
         data = {}
         data["size"] = self.get_size()
         data["chunk_size"] = self.chunk_size
         data["layers"] = []
+        data["spawn"] = list(self.spawn_point)
         for layer in self.layers:
             data["layers"].append([layer[0], layer[1].format()])
         return data
+
     def load(self,data):
         if not data:
             return False
@@ -62,7 +68,9 @@ class Level:
         self.layer_count = 0
         self.chunk_size = data["chunk_size"]
         self.size = data["size"]
+        self.spawn_point = Vector2(*data["spawn"]) if "spawn" in data else Vector2(32,32)
         self.layers = []
+
         for i, value in enumerate(data["layers"]):
             id = value[0]
             layer_data = value[1]
@@ -70,6 +78,7 @@ class Level:
             if layer_data:
                 self.layers[i][1].load(layer_data)
                 self.total += self.layers[i][1].total
+
         time = (pygame.time.get_ticks() - start) / 1000
         print(f"level loaded in {time}s")
         return True

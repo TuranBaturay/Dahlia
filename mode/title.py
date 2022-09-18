@@ -5,6 +5,7 @@ import lib as lib
 
 class Title(Mode):
     def __init__(self, app, display) -> None:
+        self.bg_color=[34, 26, 41]
         super().__init__(app, display)
 
     def init_gui(self):
@@ -80,6 +81,6 @@ class Title(Mode):
         self.app.selected_level = "level"
         self.app.load_level(self.app.selected_level)
 
-    def update(self, dt, mouse, mouse_button, mouse_pressed):
-        self.display.fill((30, 39, 45))
-        super().update(dt, mouse, mouse_button, mouse_pressed)
+    def active_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.fill(self.bg_color)
+        super().active_update(dt, mouse, mouse_button, mouse_pressed)

@@ -3,8 +3,6 @@ from .panel import Panel
 from .textbox import TextBox
 import lib as lib
 import pygame
-
-
 class DialogBox(TextBox):
     def __init__(
         self,
@@ -108,31 +106,32 @@ class DialogBox(TextBox):
         line_w = 0
         self.text_list = []
         color_counter = 0
-        tmp = text.split('\\n')
-        for k, line in enumerate(tmp):
-            tmp[k] = line.split('#')
+        tmp1 = text.split('\\n')
+        tmp =[]
+        next_index = 0
+        in_color_block = False
+        for k,line in enumerate(tmp1):
+            tmp.append([])
+            while(line):
+                if in_color_block:
+                    next_index = line.find('}')
+                    if next_index == -1:next_index = len(line)
+                    part,rest = line[:next_index],line[next_index+1:]
+                    split_part = part.split(maxsplit=1)
+                    part = {'color':split_part[0],'text':''.join(split_part[1:])}
+                    in_color_block = False
+                else:
+                    next_index = line.find('{')
+                    if next_index == -1:next_index = len(line)
+                    part,rest = line[:next_index],line[next_index+1:]
+                    part = {'color':self.default_text_color,'text':part}
+                    in_color_block = True 
+                #print(part)
+                line = rest
+                if part : tmp[k].append(part)
         length = len(tmp)
         while i < length:
             line = tmp[i]
-            #print("line at start : ",line)
-            for j, part in enumerate(line):
-                if isinstance(line[j],str):
-                    if part == '':
-                        line.pop(j)
-                        color_counter+=1
-                        continue
-                    if color_counter%2 == 1:
-                        split_line = part.split(maxsplit=1)
-                        color = split_line[0]
-                        rest = ' '.join(split_line[1:]) if len(split_line)>1 else ''
-                        line[j]={'color':color,'text':rest}
-                    else:
-                        line[j]={'color':self.default_text_color,'text':line[j]}
-                    color_counter+=1
-                else:
-                    if part['color']==self.default_text_color:
-                        color_counter=1
-            color_counter+=1
             if not line:
                 i+=1
                 continue

@@ -12,9 +12,10 @@ class Settings(Mode):
         super().__init__(app, display)
         self.track = 0
         self.toggle_music.toggle(False)
-        self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT))
-        self.dim_surf.fill((20,20,20))
-        #self.dim_surf.set_alpha(70)
+        self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT),pygame.SRCALPHA)
+        self.tmp_surf = self.dim_surf.copy()
+        self.dim_surf.fill((0,0,0,0))
+        self.x_offset = 0
 
     def init_gui(self):
         label_color = lib.dark_blue
@@ -180,10 +181,52 @@ class Settings(Mode):
         if key == K_ESCAPE:
             self.app.set_mode(self.app.previous_mode)
 
-    def update(self, dt, mouse, mouse_button, mouse_pressed):
-        #self.display.blits([[self.app.display_stamp, (0, 0)],[self.dim_surf, (0, 0),None,BLEND_RGB_SUB]])
+    def active_update(self, dt, mouse, mouse_button, mouse_pressed):
         self.display.blit(self.dim_surf,(0,0))
-        return super().update(dt, mouse, mouse_button, mouse_pressed)
+        return super().active_update(dt, mouse, mouse_button, mouse_pressed)
+
+    def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
+        if round(self.x_offset) >= 0:
+            self.state = "active"
+            self.active_update(dt,mouse,mouse_button,mouse_pressed)
+            return
+        self.display.blit(self.dim_surf,(0,0))
+        if self.tmp_surf.get_alpha() != int(255+self.x_offset): 
+            self.tmp_surf.set_alpha(int(255+self.x_offset))
+        dx = -self.x_offset
+        self.x_offset = min(0,self.x_offset+dx*(0.2))
+        for panel in self.gui_list:
+            if panel.visible:
+                self.tmp_surf.blit(panel.image,panel.rect.move(int(self.x_offset),0))
+        self.display.blit(self.tmp_surf,(0,0))
+        self.tmp_surf.fill((0,0,0,0))
+
+    def exit_update(self, dt, mouse, mouse_button, mouse_pressed):
+        if round(self.x_offset) <= -255:
+            self.state = "active"
+            pygame.event.post(self.exit_event)
+            return
+        self.display.blit(self.dim_surf,(0,0))
+        if self.tmp_surf.get_alpha() != int(255+self.x_offset): 
+            self.tmp_surf.set_alpha(int(255+self.x_offset))
+        
+        self.x_offset-=abs(self.x_offset*0.25)
+        for panel in self.gui_list:
+            if panel.visible:
+                self.tmp_surf.blit(panel.image,panel.rect.move(int(self.x_offset),0))
+        self.display.blit(self.tmp_surf,(0,0))
+        self.tmp_surf.fill((0,0,0,0))
+
+    def on_exit_mode(self, exit_event):
+        self.x_offset = -1
+        super().on_exit_mode(exit_event)
+        
     def on_enter_mode(self):
-        self.dim_surf.fill((120,120,120))
-        self.dim_surf.blit(self.app.display_stamp,(0,0),None,pygame.BLEND_MULT)
+        super().on_enter_mode()
+        self.x_offset = -255
+        self.tmp_surf.fill((0,0,0))
+        self.tmp_surf.set_alpha(80)
+        self.dim_surf.blit(self.app.display_stamp,(0,0))
+        self.dim_surf.blit(self.tmp_surf,(0,0))
+        self.tmp_surf.set_alpha(0)
+        #self.dim_surf.fill((0,0,0))

@@ -10,6 +10,8 @@ df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
 lang="en"
 langs = list(df)[1:]
 default_text_size = 18
+small_font = 12
+big_font = 24
 from pygame.locals import SRCALPHA
 
 pygame.font.init()
@@ -34,8 +36,10 @@ FRICTION = 0.7
 WIDTH = 1280  # 1024
 HEIGHT = 720  # 768
 DISPLAY_RECT = pygame.Rect(0,0,WIDTH,HEIGHT)
+
 INPUTBOX = pygame.event.custom_type()
 DIALOG = pygame.event.custom_type()
+SET_MODE = pygame.event.custom_type()
 
 level_path = "levels/"
 tileset_path = "Assets/Tiles/tileset.png"
@@ -79,11 +83,11 @@ def set_lang(language):
 def get_dialog_data(uid):
     df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
     data = (df.loc[df["ID"] == uid, lang]).tolist()
-    if not data:
+    if pd_isnull(data):
         print("Error : No such data : ", uid)
         return []
     #print(data)
-    return data
+    return data[0]
 
 
 def post_dialog(act, dat):
@@ -91,13 +95,9 @@ def post_dialog(act, dat):
 
 
 def post_dialogs_by_id(uid):
-    df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
-
-    data = (df.loc[df["ID"] == uid, lang]).tolist()[0]
-
-    if pd_isnull(data):
-        print("Error : No such data : ", uid)
-        return []
+    data = get_dialog_data(uid)
+    if not data:
+        return
     for string in data.split('§'):
         post_dialog("SAY",{"text" : string})
 

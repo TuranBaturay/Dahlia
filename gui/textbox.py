@@ -49,7 +49,6 @@ class TextBox(Panel):
         if text_color:
             self.text_color = text_color
         self.text = text
-        #print(text,"textbox")
         if self.text :
             self.text_surf = lib.render_text(self.text, self.font, self.text_color)
             self.text_rect = self.text_surf.get_rect()

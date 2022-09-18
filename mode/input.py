@@ -162,7 +162,9 @@ class Input(Mode):
     def on_enter_mode(self):
         pygame.key.set_repeat(300, 20)
         self.display_stamp = self.display.copy()
+        super().on_enter_mode()
 
-    def on_exit_mode(self):
+    def on_exit_mode(self, exit_event):
         pygame.key.set_repeat()
         self.app.display_stamp = self.display_stamp
+        super().on_exit_mode(exit_event)

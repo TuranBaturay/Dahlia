@@ -13,6 +13,15 @@ class Game(Mode):
         self.bg_scaled = pygame.surface.Surface((2160, 1200))
         pygame.transform.scale(self.bg, (2160, 1200), self.bg_scaled)
 
+    def toggle_update_player(self,toggle):
+        self.update_player =  toggle
+
+    def spawn(self):
+        self.app.player.go_to(self.app.level.spawn_point, anchor="s"),
+        self.app.player.set_cat(self.app.cat),
+        self.app.cat.go_to(self.app.player.rect.midbottom, anchor="s"),
+        self.app.camera.set_source(Vector2(*self.app.player.pos))
+
     def init_gui(self):
         self.health_meter = gui.Meter(
             self.gui_list,
@@ -35,7 +44,7 @@ class Game(Mode):
             bg_color=[30, 30, 30],
         )
 
-    def update(self, dt, mouse, mouse_button, mouse_pressed):
+    def active_update(self, dt, mouse, mouse_button, mouse_pressed):
         self.health_meter.set_value(self.app.player.health_level)
         self.magic_meter.set_value(self.app.player.magic_level)
 
@@ -55,6 +64,8 @@ class Game(Mode):
         res =self.app.level.blit_layers(hitbox=self.app.show_hitbox)
         self.app.debugger.set("CPH", str(res))
         self.app.character_group.update(dt)
+        if self.app.playing_character.rect.y > 8000:
+            self.app.load_level(self.app.selected_level)
         for panel in self.gui_list:
             panel.update(dt, mouse, mouse_button, mouse_pressed)
         self.blit_gui()
@@ -74,6 +85,8 @@ class Game(Mode):
 
         if key == K_e:
             self.app.set_mode("edit")
+        elif key == K_s:
+            self.spawn()
         elif key ==K_u:
             lib.post_dialogs_by_id("test")
         elif key == K_m:
@@ -90,3 +103,4 @@ class Game(Mode):
             )
         elif key == K_y:
             self.app.set_character(self.app.cat if self.app.get_character() == self.app.player else self.app.player)
+
