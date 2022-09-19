@@ -278,4 +278,3 @@ class LevelViewer(Mode):
     def on_enter_mode(self):
         self.init_gui()
         super().on_enter_mode()
-        

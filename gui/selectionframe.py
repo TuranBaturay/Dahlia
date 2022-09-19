@@ -1,5 +1,7 @@
 import gui as gui
 import lib as lib
+
+
 class SelectionFrame(gui.Panel):
     def __init__(
         self,
@@ -13,12 +15,20 @@ class SelectionFrame(gui.Panel):
         border_color=lib.dark_gray,
         border_radius=0,
         uid="",
-        camera=None
+        camera=None,
     ) -> None:
         super().__init__(
-            gui_list, x, y, width, height,
-            color, border, border_color, border_radius,
-            uid, camera=camera
+            gui_list,
+            x,
+            y,
+            width,
+            height,
+            color,
+            border,
+            border_color,
+            border_radius,
+            uid,
+            camera=camera,
         )
         self.fixed = False
         self.set_up = False
@@ -31,7 +41,7 @@ class SelectionFrame(gui.Panel):
     def update(self, dt, mouse, mouse_button, mouse_pressed=None):
         super().update(dt, mouse, mouse_button, mouse_pressed)
         if self.camera:
-            mouse_pos = [mouse[0],mouse[1]]
+            mouse_pos = [mouse[0], mouse[1]]
 
         if not self.fixed and mouse_button[1]:
             self.source = mouse_pos
@@ -58,9 +68,9 @@ class SelectionFrame(gui.Panel):
                 self.rect.h = mouse_pos[1] - self.source[1]
                 self.origin.y = self.source[1]
             self.rect.normalize()
-            
+
         self.update_pos()
 
     def draw(self):
         pass
-        #super().draw()
+        # super().draw()

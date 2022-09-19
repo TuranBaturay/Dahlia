@@ -41,7 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.interaction_feedback = 0
         self.interaction_alpha_target = 255
 
-        #Interaction surface 'X' button
+        # Interaction surface 'X' button
         self.interaction_surf = pygame.surface.Surface((64, 64))
         self.interaction_surf.set_colorkey((0, 0, 0))
         pygame.draw.circle(
@@ -360,14 +360,17 @@ class Player(pygame.sprite.Sprite):
                     if delta <= 16:
                         self.interaction_alpha_target = 255
                     else:
-                        self.interaction_alpha_target = 120 
+                        self.interaction_alpha_target = 120
 
                 else:
                     self.interaction_alpha_target = 0
-                        
 
         self.animation_counter += 60 * dt
-        self.interaction_surf.set_alpha(self.interaction_feedback + self.interaction_surf.get_alpha() + 0.2*(self.interaction_alpha_target-self.interaction_surf.get_alpha()))
+        self.interaction_surf.set_alpha(
+            self.interaction_feedback
+            + self.interaction_surf.get_alpha()
+            + 0.2 * (self.interaction_alpha_target - self.interaction_surf.get_alpha())
+        )
         if self.animation_counter >= len(self.animation_dict[self.state]):
             self.animation_counter = 0
             self.run_frame = 0

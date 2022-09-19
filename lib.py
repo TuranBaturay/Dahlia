@@ -5,9 +5,9 @@ from pandas import read_csv as pd_read_csv
 from pandas import isnull as pd_isnull
 
 
-df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+df = pd_read_csv("script/dialogues.csv", sep="|", header=[0])
 
-lang="en"
+lang = "en"
 langs = list(df)[1:]
 default_text_size = 18
 small_font = 12
@@ -18,7 +18,7 @@ pygame.font.init()
 
 fonts = {}
 
-for size in [12,18,24,36,48,60,72]:
+for size in [12, 18, 24, 36, 48, 60, 72]:
     fonts[size] = pygame.font.Font("fonts/mochiy.ttf", size)
 fonts["title"] = pygame.font.Font("fonts/verdana.ttf", 100, italic=True)
 
@@ -29,13 +29,12 @@ def blend_color(color1, color2):
     return color2
 
 
-
 FPS = 60
 GRAVITY = 2700
 FRICTION = 0.7
 WIDTH = 1280  # 1024
 HEIGHT = 720  # 768
-DISPLAY_RECT = pygame.Rect(0,0,WIDTH,HEIGHT)
+DISPLAY_RECT = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
 INPUTBOX = pygame.event.custom_type()
 DIALOG = pygame.event.custom_type()
@@ -59,7 +58,7 @@ cloud_white = [236, 240, 241]
 turquoise = [26, 188, 156]
 dark_turquoise = blend_color([22, 160, 133], [30, 30, 30])
 darker_turquoise = blend_color(dark_turquoise, [30, 30, 30])
-transparent = [0,0,0,0]
+transparent = [0, 0, 0, 0]
 darker_red = blend_color(dark_red, [40, 40, 40])
 darker_blue = blend_color(dark_blue, [10, 10, 10])
 darker_green = blend_color(dark_green, [10, 10, 10])
@@ -74,19 +73,21 @@ character_sprites = {}
 tileset_cache = {}
 animated_tileset_cache = []
 
+
 def set_lang(language):
     global lang
     if language not in langs:
         return
     lang = language
 
+
 def get_dialog_data(uid):
-    df = pd_read_csv("script/dialogues.csv",sep='|', header=[0])
+    df = pd_read_csv("script/dialogues.csv", sep="|", header=[0])
     data = (df.loc[df["ID"] == uid, lang]).tolist()
     if pd_isnull(data):
         print("Error : No such data : ", uid)
         return []
-    #print(data)
+    # print(data)
     return data[0]
 
 
@@ -98,12 +99,8 @@ def post_dialogs_by_id(uid):
     data = get_dialog_data(uid)
     if not data:
         return
-    for string in data.split('§'):
-        post_dialog("SAY",{"text" : string})
-
-
-
-
+    for string in data.split("§"):
+        post_dialog("SAY", {"text": string})
 
 
 def get_by_id(gui_list, uid):
@@ -185,7 +182,7 @@ def level_to_pixel(level_data):
                     if surf.get_at((tile_x, tile_y)) != (0, 0, 0, 0):
                         continue
                     surf.set_at((tile_x, tile_y), tile_to_pixel(tile))
-    
+
     return surf
 
 

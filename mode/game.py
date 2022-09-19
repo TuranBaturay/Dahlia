@@ -13,8 +13,8 @@ class Game(Mode):
         self.bg_scaled = pygame.surface.Surface((2160, 1200))
         pygame.transform.scale(self.bg, (2160, 1200), self.bg_scaled)
 
-    def toggle_update_player(self,toggle):
-        self.update_player =  toggle
+    def toggle_update_player(self, toggle):
+        self.update_player = toggle
 
     def spawn(self):
         self.app.player.go_to(self.app.level.spawn_point, anchor="s"),
@@ -61,7 +61,7 @@ class Game(Mode):
         )
 
         self.app.level.update(dt)
-        res =self.app.level.blit_layers(hitbox=self.app.show_hitbox)
+        res = self.app.level.blit_layers(hitbox=self.app.show_hitbox)
         self.app.debugger.set("CPH", str(res))
         self.app.character_group.update(dt)
         if self.app.playing_character.rect.y > 8000:
@@ -87,7 +87,7 @@ class Game(Mode):
             self.app.set_mode("edit")
         elif key == K_s:
             self.spawn()
-        elif key ==K_u:
+        elif key == K_u:
             lib.post_dialogs_by_id("test")
         elif key == K_m:
             player.health_level += 10
@@ -102,5 +102,8 @@ class Game(Mode):
                 [i * 64 for i in self.app.get_virtual_mouse_pos()], anchor="nw"
             )
         elif key == K_y:
-            self.app.set_character(self.app.cat if self.app.get_character() == self.app.player else self.app.player)
-
+            self.app.set_character(
+                self.app.cat
+                if self.app.get_character() == self.app.player
+                else self.app.player
+            )

@@ -1,4 +1,3 @@
-
 import sys
 from os.path import isfile as os_isfile
 from os.path import join as os_join
@@ -6,7 +5,7 @@ from os import listdir as os_listdir
 from os import chdir as os_chdir
 
 # Set the directory for export aas .exe
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     os_chdir(sys._MEIPASS)
 
 from level import Level
@@ -83,8 +82,7 @@ class App:
         # App Logic
         self.load_ressources()
 
-        self.character_group = pygame.sprite.OrderedUpdates(
-            self.cat, self.player)
+        self.character_group = pygame.sprite.OrderedUpdates(self.cat, self.player)
         self.playing_character = None
         self.set_character(self.player)
         self.display_stamp = None
@@ -128,11 +126,13 @@ class App:
     def get_inspector(self):
         return self.mode_dict["inspector"]
 
-    def set_mode(self, mode, stamp=True,call_exit=True):
+    def set_mode(self, mode, stamp=True, call_exit=True):
 
         if self.previous_mode and call_exit:
-            self.mode_dict[self.mode].on_exit_mode(pygame.event.Event(lib.SET_MODE,args=[mode,stamp,False]))
-            
+            self.mode_dict[self.mode].on_exit_mode(
+                pygame.event.Event(lib.SET_MODE, args=[mode, stamp, False])
+            )
+
             return
         if stamp:
             self.display_stamp = self.screen.copy()
@@ -175,14 +175,16 @@ class App:
             return False
         self.vignette_set_source(source)
 
-        def func(): return [
-            self.level.load_from_file(filename),
-            self.player.go_to(self.level.spawn_point, anchor="s"),
-            self.player.set_cat(self.cat),
-            self.cat.go_to(self.player.rect.midbottom, anchor="s"),
-            self.camera.set_source(Vector2(*self.player.pos)),
-            self.set_mode(mode),
-        ]
+        def func():
+            return [
+                self.level.load_from_file(filename),
+                self.player.go_to(self.level.spawn_point, anchor="s"),
+                self.player.set_cat(self.cat),
+                self.cat.go_to(self.player.rect.midbottom, anchor="s"),
+                self.camera.set_source(Vector2(*self.player.pos)),
+                self.set_mode(mode),
+            ]
+
         if skip_vignette:
             func()
             return True
@@ -358,7 +360,9 @@ class App:
                     self.onkeydown(event.key, caps)
                 elif event.type == pygame.WINDOWMOVED:
                     continue_flag = True
-            if not pygame.key.get_focused() or continue_flag:  # Lower fps when app in Background
+            if (
+                not pygame.key.get_focused() or continue_flag
+            ):  # Lower fps when app in Background
                 _clock.tick(10)
                 self.debugger.set("FPS", str(int(_clock.get_fps())), True)
                 self.debugger.update()
@@ -389,10 +393,9 @@ class App:
             self.keyboard_mouse_input(keys)
 
             if self.mode in self.mode_dict:
-                #print(self.mode)
-                self.mode_dict[self.mode].update(
-                    dt, mouse, mouse_button, mouse_pressed)
-            #_screen.blit(_display, (0, 0))
+                # print(self.mode)
+                self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
+            # _screen.blit(_display, (0, 0))
             self.update_vignette(_screen, dt)
             self.debugger.update()
             pygame.display.update()

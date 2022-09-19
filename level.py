@@ -17,7 +17,7 @@ class Level:
         self.layer_order = []
         self.layer_count = 0
         self.last_camera_value = Vector2(0, 0)
-        self.spawn_point = Vector2(32,32)
+        self.spawn_point = Vector2(32, 32)
 
         self.num = [
             (0, 0),
@@ -45,8 +45,8 @@ class Level:
         )
         self.add_layer()
 
-    def set_spawn_point(self,x,y):
-        self.spawn_point.update(x,y)
+    def set_spawn_point(self, x, y):
+        self.spawn_point.update(x, y)
 
     def format(self):
         data = {}
@@ -58,7 +58,7 @@ class Level:
             data["layers"].append([layer[0], layer[1].format()])
         return data
 
-    def load(self,data):
+    def load(self, data):
         if not data:
             return False
         print("Loading level")
@@ -68,7 +68,9 @@ class Level:
         self.layer_count = 0
         self.chunk_size = data["chunk_size"]
         self.size = data["size"]
-        self.spawn_point = Vector2(*data["spawn"]) if "spawn" in data else Vector2(32,32)
+        self.spawn_point = (
+            Vector2(*data["spawn"]) if "spawn" in data else Vector2(32, 32)
+        )
         self.layers = []
 
         for i, value in enumerate(data["layers"]):
@@ -82,6 +84,7 @@ class Level:
         time = (pygame.time.get_ticks() - start) / 1000
         print(f"level loaded in {time}s")
         return True
+
     def save_to_file(self, filename="level"):
         path = "levels/" + filename + ".json"
         data = self.format()
@@ -230,14 +233,12 @@ class Level:
         hitbox_blit_list = []
 
         for layer in self.layers:
-            if  not layer[1].visible:
+            if not layer[1].visible:
                 continue
 
             layer_list, c = layer[1].blit_chunks(self.display, return_list=True)
             blit_list.extend(layer_list)
             counter += c
-
-
 
             if hitbox:
                 blit_rect = self.chunk_border.get_rect()
@@ -261,10 +262,9 @@ class Level:
                         hitbox_blit_list.append([self.chunk_border, blit_rect.copy()])
 
         self.display.blits(blit_list)
-        if hitbox : 
+        if hitbox:
             self.display.blits(hitbox_blit_list)
         return counter
-
 
     def update(self, dt):
         for layer in self.layers:

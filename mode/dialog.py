@@ -5,16 +5,23 @@ import pygame
 from math import cos
 from pygame.locals import *
 
+
 class Dialog(Mode):
     def __init__(self, app, display) -> None:
         super().__init__(app, display)
-        self.commands = ["set_speed","set_image","set_delay","set_color","set_default_color"]
+        self.commands = [
+            "set_speed",
+            "set_image",
+            "set_delay",
+            "set_color",
+            "set_default_color",
+        ]
         self.queue = []
         self.default_speed = 0.5
         self.text_speed = self.default_speed
         self.image = None
         self.sprite_offset = 0
-        self.gui_offset = - lib.WIDTH
+        self.gui_offset = -lib.WIDTH
         self.text_len = 0
         self.fcounter = 0.0
         self.text = ""
@@ -24,7 +31,7 @@ class Dialog(Mode):
             "mood": "",
             "text": "",
         }
-        self.punctiation = [',','!','.','?']
+        self.punctiation = [",", "!", ".", "?"]
         self.wait = False
         self.pause_event = pygame.event.Event(lib.DIALOG, action="PAUSE")
         self.resume_event = pygame.event.Event(lib.DIALOG, action="RESUME")
@@ -35,15 +42,17 @@ class Dialog(Mode):
     def init_gui(self):
         self.dialog_box = gui.DialogBox(
             self.gui_list,
-            100,lib.HEIGHT - 220,
-            800,150,
+            100,
+            lib.HEIGHT - 220,
+            800,
+            150,
             color=lib.dark_blue + [210],
             align="left",
             padding=30,
             font=18,
             border_radius=10,
         )
-        self.dialog_box.rect.centerx = lib.WIDTH//2
+        self.dialog_box.rect.centerx = lib.WIDTH // 2
         self.dialog_label = gui.TextBox(
             self.gui_list,
             self.dialog_box.rect.x,
@@ -56,7 +65,7 @@ class Dialog(Mode):
         )
         self.dialog_next_button = gui.Button(
             self.gui_list,
-            self.dialog_box.rect.right +10,
+            self.dialog_box.rect.right + 10,
             self.dialog_box.rect.centery - 25,
             50,
             50,
@@ -66,10 +75,10 @@ class Dialog(Mode):
             border_radius=10,
         )
 
-    def set_color(self,color):
+    def set_color(self, color):
         self.dialog_box.set_text_color(color)
 
-    def set_default_color(self,color):
+    def set_default_color(self, color):
         self.dialog_box.set_default_text_color(color)
 
     def set_track(self, track, permanent=False):
@@ -78,7 +87,8 @@ class Dialog(Mode):
     def set_delay(self, time):
         if time is not int:
             time = int(time)
-        if time < 1 : return
+        if time < 1:
+            return
 
         self.wait = True
         self.dialog_next_button.disable()
@@ -109,8 +119,9 @@ class Dialog(Mode):
             self.image = None
         self.dialog_info["name"] = name
         self.dialog_info["mood"] = mood
-        
-        if name : self.dialog_label.set_text(name.title())
+
+        if name:
+            self.dialog_label.set_text(name.title())
 
     def next(self):
         self.wait = False
@@ -132,8 +143,16 @@ class Dialog(Mode):
             self.text = ""
             self.app.set_mode(self.app.previous_mode)
             return
-        name = self.queue[0]["name"] if "name" in self.queue[0] else self.dialog_info["name"]
-        mood = self.queue[0]["mood"] if "mood" in self.queue[0] else self.dialog_info["mood"]
+        name = (
+            self.queue[0]["name"]
+            if "name" in self.queue[0]
+            else self.dialog_info["name"]
+        )
+        mood = (
+            self.queue[0]["mood"]
+            if "mood" in self.queue[0]
+            else self.dialog_info["mood"]
+        )
         # print(self.dialog_info['sprite_x'])
         self.set_image(name, mood)
         # print(self.dialog_info['sprite_x'])
@@ -146,7 +165,7 @@ class Dialog(Mode):
 
         self.text_len = len(self.text)
 
-    def queue_append(self,data):
+    def queue_append(self, data):
         self.queue.append(data)
         if self.app.mode != "dialog":
             self.app.set_mode("dialog")
@@ -160,63 +179,64 @@ class Dialog(Mode):
             if counter >= self.text_len:
                 self.dialog_next_button.enable()
             else:
-                #check commands
-                if self.text[counter]=="(":
-                    command_end = self.text.find(")",counter+1)
-                    if command_end == -1 :
-                        command_end = self.text_len-1
+                # check commands
+                if self.text[counter] == "(":
+                    command_end = self.text.find(")", counter + 1)
+                    if command_end == -1:
+                        command_end = self.text_len - 1
                         print("Error : Unmatched parenthesis")
-                    dialog_command = self.text[counter+1:command_end].split(",")
-                    if dialog_command[0] not in self.commands : 
-                        print("Error : Unknown/Unauthorized command : ",dialog_command)
+                    dialog_command = self.text[counter + 1 : command_end].split(",")
+                    if dialog_command[0] not in self.commands:
+                        print("Error : Unknown/Unauthorized command : ", dialog_command)
                         dialog_command = None
-                    self.text = self.text[:counter] + self.text[command_end+1:]
+                    self.text = self.text[:counter] + self.text[command_end + 1 :]
                     self.text_len = len(self.text)
-                elif self.text[counter]=='{':
-                    self.fcounter = counter= self.text.find(' ',counter+1)
-                    if self.fcounter < 0  :
+                elif self.text[counter] == "{":
+                    self.fcounter = counter = self.text.find(" ", counter + 1)
+                    if self.fcounter < 0:
                         self.fcounter = counter = self.text_len
-                elif self.text[counter]=='\\':
-                    self.fcounter = counter= counter+1
+                elif self.text[counter] == "\\":
+                    self.fcounter = counter = counter + 1
                 if self.gui_offset == 0:
-                    self.dialog_box.set_text(self.text[:counter+1])
+                    self.dialog_box.set_text(self.text[: counter + 1])
 
-                    self.fcounter = min(self.text_len, self.fcounter + self.text_speed*dt*60)
+                    self.fcounter = min(
+                        self.text_len, self.fcounter + self.text_speed * dt * 60
+                    )
 
         # DISPLAY CHARACTER SPRITE
 
         # DISPLAY GUI
         if self.image:
-            self.display.blit(
-                self.image, (0, 0)
-            )
+            self.display.blit(self.image, (0, 0))
 
         for panel in self.gui_list:
             panel.update(dt, mouse, mouse_button, mouse_pressed)
             if panel.visible:
-                if panel == self.dialog_label and self.dialog_label.get_text()=="":
+                if panel == self.dialog_label and self.dialog_label.get_text() == "":
                     continue
 
-                elif panel != self.dialog_next_button or  panel.disabled:
+                elif panel != self.dialog_next_button or panel.disabled:
                     self.display.blit(panel.image, panel.rect)
-                else: #NEXT BUTTON
-                    
-                    rect = panel.rect.move(4 * cos(pygame.time.get_ticks() * (1 / 150)), 0)
+                else:  # NEXT BUTTON
+
+                    rect = panel.rect.move(
+                        4 * cos(pygame.time.get_ticks() * (1 / 150)), 0
+                    )
                     self.display.blit(panel.image, rect)
                     pygame.draw.rect(
                         self.display, (lib.sky_blue), rect, 3, panel.border_radius
                     )
-                    
-        if dialog_command:
-            print("recieved command : ",dialog_command)
-            getattr(self,dialog_command[0])(*dialog_command[1:])
 
+        if dialog_command:
+            print("recieved command : ", dialog_command)
+            getattr(self, dialog_command[0])(*dialog_command[1:])
 
     def on_enter_mode(self):
         super().on_enter_mode()
         self.next()
 
-    def on_exit_mode(self,exit_event):
+    def on_exit_mode(self, exit_event):
         self.exiting = True
         self.x_offset_target = -lib.WIDTH
         super().on_exit_mode(exit_event)
@@ -226,5 +246,5 @@ class Dialog(Mode):
         if key == K_x:
             if not self.dialog_next_button.disabled:
                 self.next()
-            elif '(' not in self.text[int(self.fcounter)+1:] and not self.wait:
-                self.fcounter=self.text_len-1
+            elif "(" not in self.text[int(self.fcounter) + 1 :] and not self.wait:
+                self.fcounter = self.text_len - 1

@@ -2,6 +2,7 @@ import pygame
 import lib as lib
 from pygame.math import Vector2
 
+
 class Panel(pygame.sprite.Sprite):
     def __init__(
         self,
@@ -15,7 +16,7 @@ class Panel(pygame.sprite.Sprite):
         border_color=lib.dark_gray,
         border_radius=0,
         uid="",
-        camera=None
+        camera=None,
     ):
         pygame.sprite.Sprite.__init__(self)
 
@@ -33,7 +34,7 @@ class Panel(pygame.sprite.Sprite):
         self.border = border
         self.border_color = border_color
         self.border_radius = border_radius
-        self.origin = Vector2(x,y)
+        self.origin = Vector2(x, y)
         if not self.color:
             self.color = (0, 0, 0)
         pygame.draw.rect(
@@ -45,6 +46,7 @@ class Panel(pygame.sprite.Sprite):
                 self.image, border_color, (0, 0, width, height), border, border_radius
             )
         self.camera = camera
+
     def mouse_enter(self):
         pass
 
@@ -73,9 +75,9 @@ class Panel(pygame.sprite.Sprite):
                 self.mouse_leave()
 
     def update_pos(self):
-        
+
         if self.camera:
-            self.rect.topleft = self.origin-self.camera.int_pos
+            self.rect.topleft = self.origin - self.camera.int_pos
 
     def draw(self):
         self.image.fill((0, 0, 0, 0))

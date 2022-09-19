@@ -5,4 +5,4 @@ from .textbox import TextBox
 from .slider import Slider
 from .dialogbox import DialogBox
 from .meter import Meter
-from .selectionframe  import SelectionFrame
+from .selectionframe import SelectionFrame

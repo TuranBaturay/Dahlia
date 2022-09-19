@@ -5,7 +5,7 @@ import lib as lib
 
 class Title(Mode):
     def __init__(self, app, display) -> None:
-        self.bg_color=[34, 26, 41]
+        self.bg_color = [34, 26, 41]
         super().__init__(app, display)
 
     def init_gui(self):
@@ -66,7 +66,7 @@ class Title(Mode):
         gui.Button(
             self.gui_list,
             x_center - 80,
-            y_pos ,
+            y_pos,
             140,
             30,
             "Quit",
