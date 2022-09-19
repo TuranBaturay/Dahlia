@@ -170,8 +170,7 @@ class Dialog(Mode):
         if self.app.mode != "dialog":
             self.app.set_mode("dialog")
 
-    def update(self, dt, mouse, mouse_button, mouse_pressed):
-
+    def active_update(self, dt, mouse, mouse_button, mouse_pressed):
         self.display.blit(self.app.display_stamp, (0, 0))
         counter = int(self.fcounter)
         dialog_command = None
@@ -197,12 +196,12 @@ class Dialog(Mode):
                         self.fcounter = counter = self.text_len
                 elif self.text[counter] == "\\":
                     self.fcounter = counter = counter + 1
-                if self.gui_offset == 0:
-                    self.dialog_box.set_text(self.text[: counter + 1])
+                
+                self.dialog_box.set_text(self.text[: counter + 1])
 
-                    self.fcounter = min(
-                        self.text_len, self.fcounter + self.text_speed * dt * 60
-                    )
+                self.fcounter = min(
+                    self.text_len, self.fcounter + self.text_speed * dt * 60
+                )
 
         # DISPLAY CHARACTER SPRITE
 
@@ -232,9 +231,19 @@ class Dialog(Mode):
             print("recieved command : ", dialog_command)
             getattr(self, dialog_command[0])(*dialog_command[1:])
 
+    def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
+        if round(self.gui_offset)>=0:
+            self.gui_offset = 0
+            self.state = "active"
+        self.gui_offset+=10
+        for panel in self.gui_list:
+            if panel.visible: self.display.blit(panel.image,panel.rect.move(self.gui_offset,0))
+            
+
     def on_enter_mode(self):
-        super().on_enter_mode()
         self.next()
+        self.gui_offset = -lib.WIDTH
+        super().on_enter_mode()
 
     def on_exit_mode(self, exit_event):
         self.exiting = True

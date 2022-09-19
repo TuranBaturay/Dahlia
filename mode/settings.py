@@ -3,7 +3,6 @@ import gui as gui
 import lib as lib
 import pygame
 from pygame.locals import *
-from pygame import BLEND_SUB
 
 
 class Settings(Mode):
@@ -26,6 +25,7 @@ class Settings(Mode):
             lib.HEIGHT - 100,
             color=lib.dark_blue,
             border_radius=10,
+            border_radii=[10,10,0,0]
         )
         title_label = gui.TextBox(
             self.gui_list,
@@ -246,7 +246,7 @@ class Settings(Mode):
         if self.tmp_surf.get_alpha() != int(255 + self.x_offset):
             self.tmp_surf.set_alpha(int(255 + self.x_offset))
         dx = -self.x_offset
-        self.x_offset = min(0, self.x_offset + dx * (0.2))
+        self.x_offset = min(0, self.x_offset + dx * (dt*20))
         for panel in self.gui_list:
             if panel.visible:
                 self.tmp_surf.blit(panel.image, panel.rect.move(int(self.x_offset), 0))
@@ -262,7 +262,7 @@ class Settings(Mode):
         if self.tmp_surf.get_alpha() != int(255 + self.x_offset):
             self.tmp_surf.set_alpha(int(255 + self.x_offset))
 
-        self.x_offset -= abs(self.x_offset * 0.25)
+        self.x_offset -= 10 +abs(self.x_offset * (dt*20))
         for panel in self.gui_list:
             if panel.visible:
                 self.tmp_surf.blit(panel.image, panel.rect.move(int(self.x_offset), 0))

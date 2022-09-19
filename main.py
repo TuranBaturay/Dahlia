@@ -175,8 +175,7 @@ class App:
             return False
         self.vignette_set_source(source)
 
-        def func():
-            return [
+        func = lambda :  [
                 self.level.load_from_file(filename),
                 self.player.go_to(self.level.spawn_point, anchor="s"),
                 self.player.set_cat(self.cat),
@@ -310,7 +309,7 @@ class App:
         self.loop = True
         mouse_button = {1: False, 2: False, 3: False, 4: False, 5: False}
         caps = False
-        last_time = 0
+        last_time = pygame.time.get_ticks()
         while self.loop:
             continue_flag = False
             time = pygame.time.get_ticks()
@@ -374,6 +373,7 @@ class App:
             mouse_pressed = pygame.mouse.get_pressed()
 
             self.virtual_mouse = self.get_virtual_pos(mouse)
+            #print(pygame.time.get_ticks())
 
             self.debugger.set("FPS", str(int(_clock.get_fps())), True)
             self.debugger.set("", str(dt * 1000) + "ms", True)

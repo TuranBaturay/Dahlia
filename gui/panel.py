@@ -15,6 +15,7 @@ class Panel(pygame.sprite.Sprite):
         border=0,
         border_color=lib.dark_gray,
         border_radius=0,
+        border_radii = [-1,-1,-1,-1],
         uid="",
         camera=None,
     ):
@@ -34,21 +35,22 @@ class Panel(pygame.sprite.Sprite):
         self.border = border
         self.border_color = border_color
         self.border_radius = border_radius
+        self.border_radii =border_radii
         self.origin = Vector2(x, y)
         if not self.color:
             self.color = (0, 0, 0)
-        pygame.draw.rect(
-            self.image, self.color, (0, 0, width, height), 0, border_radius
-        )
-        if border:
+        
+        self.draw_rect_args = [self.image, self.color, (0, 0, width, height), 0,self.border_radius,*self.border_radii]
+        self.draw_rect_args_border = [self.image, self.border_color, (0, 0, width, height), self.border,self.border_radius,*self.border_radii]
 
-            pygame.draw.rect(
-                self.image, border_color, (0, 0, width, height), border, border_radius
-            )
+
+        pygame.draw.rect(*self.draw_rect_args)
+        if self.border : pygame.draw.rect(*self.draw_rect_args_border)
         self.camera = camera
 
     def mouse_enter(self):
         pass
+
 
     def mouse_leave(self):
         pass
@@ -58,6 +60,10 @@ class Panel(pygame.sprite.Sprite):
 
     def hide(self):
         self.visible = False
+
+    def set_color(self,color):
+        self.color = color
+        self.draw_rect_args  = [self.image, color, (0, 0, *self.rect.size), 0,self.border_radius,*self.border_radii]
 
     def update(self, dt, mouse_pos, mouse_button, mouse_pressed=None):
         if self.rect.collidepoint(mouse_pos):
@@ -83,14 +89,5 @@ class Panel(pygame.sprite.Sprite):
         self.image.fill((0, 0, 0, 0))
         if self.camera:
             self.update_pos()
-        pygame.draw.rect(
-            self.image, self.color, (0, 0, *self.rect.size), 0, self.border_radius
-        )
-        if self.border:
-            pygame.draw.rect(
-                self.image,
-                self.border_color,
-                (0, 0, *self.rect.size),
-                self.border,
-                self.border_radius,
-            )
+        pygame.draw.rect(*self.draw_rect_args)
+        if self.border : pygame.draw.rect(*self.draw_rect_args_border)

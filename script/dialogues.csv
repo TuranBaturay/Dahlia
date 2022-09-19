@@ -1,2 +1,2 @@
 ID|en|fr|es|jp
-test|(set_image,dahlia,happy)I am a {dark_red power}ful witch !|(set_image,dahlia,happy)Je suis une sorcière très {dark_red puissante} !|estext|私は強力な魔女です!
+test|(set_image,dahlia,happy)I am a {dark_red power}ful witch !§(set_image,dahlia,thinking)This is my thinking sprite !|(set_image,dahlia,happy)Je suis une sorcière très {dark_red puissante} !|estext|私は強力な魔女です!

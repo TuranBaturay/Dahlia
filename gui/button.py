@@ -108,7 +108,7 @@ class Button(Panel):
             self.right_click_func = func
 
     def set_color(self, color):
-        self.color = color
+        super().set_color(color)
         if self.text_panel:
             self.text_panel.set_text(self.text_panel.text, color)
         self.draw()

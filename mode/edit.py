@@ -81,7 +81,7 @@ class Edit(Mode):
         )
         self.sf.on_release = release_sf
         self.main_panel = gui.Panel(
-            self.gui_list, 0, 0, 400, lib.HEIGHT, lib.dark_blue, 3, lib.wet_blue, 10
+            self.gui_list, 0, 0, 400, lib.HEIGHT, lib.dark_blue, 3, lib.wet_blue,10, [0,0,10,10]
         )
 
         gui.Button(
@@ -363,6 +363,7 @@ class Edit(Mode):
         self.save_button.set_color(lib.dark_turquoise)
 
     def set_tool(self, tool):
+        print(tool)
         if not tool in self.tools:
             return
         self.tool = tool

@@ -74,8 +74,8 @@ class Game(Mode):
             self.app.playing_character.rect.centerx,
             self.app.playing_character.rect.y - lib.HEIGHT / 16,
         )
-        if self.app.player.state == "hiding":
-            target.y += min(self.app.player.hiding_counter, 200)
+        if self.app.player.state == "hiding" and self.app.player.hiding_counter>30:
+            target.y += min(self.app.player.hiding_counter-30, 200)
         self.app.camera.set_target(target)
         self.app.camera.update(dt)
 

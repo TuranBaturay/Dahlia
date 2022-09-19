@@ -45,7 +45,7 @@ class TextBox(Panel):
 
     def set_text(self, text, color=None, text_color=None):
         if color:
-            self.color = color
+            super().set_color(color)
         if text_color:
             self.text_color = text_color
         self.text = text

@@ -1,13 +1,14 @@
 from .mode import Mode
 import gui as gui
 import lib as lib
-
+import pygame
 
 class Title(Mode):
     def __init__(self, app, display) -> None:
         self.bg_color = [34, 26, 41]
         super().__init__(app, display)
-
+        self.y_offset = 0
+        self.tmp_surf = pygame.Surface((lib.WIDTH,lib.HEIGHT),pygame.SRCALPHA)
     def init_gui(self):
         self.gui_list = []
         x_center = lib.WIDTH // 2
@@ -84,3 +85,29 @@ class Title(Mode):
     def active_update(self, dt, mouse, mouse_button, mouse_pressed):
         self.display.fill(self.bg_color)
         super().active_update(dt, mouse, mouse_button, mouse_pressed)
+    def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
+
+        self.display.fill(self.bg_color)
+        self.tmp_surf.fill((0,0,0,0))
+
+        if round(self.y_offset) <=0:
+            self.y_offset = 0
+            self.state = "active"
+        var = 1
+        for panel in self.gui_list:
+            if not isinstance(panel,gui.Button):
+                self.display.blit(panel.image,panel.rect)
+                continue
+            self.tmp_surf.blit(panel.image,panel.rect.move(-self.y_offset*0.5*var,self.y_offset*var))
+            var+=2
+        dx = 0-self.y_offset
+        self.y_offset += dx * (dt*5)
+        self.tmp_surf.set_alpha(255-abs(self.y_offset))
+        self.display.blit(self.tmp_surf,(0,0))
+    def on_enter_mode(self):
+        if self.app.previous_mode != "title":
+            self.state ="active"
+            return
+        self.y_offset = 255
+        
+        return super().on_enter_mode()
