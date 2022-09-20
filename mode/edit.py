@@ -9,6 +9,7 @@ from math import cos
 
 
 class Edit(Mode):
+    
     def __init__(self, app, display) -> None:
         self.eye_open = pygame.image.load("Assets/icons/eye_open.png").convert_alpha()
         self.eye_close = pygame.image.load("Assets/icons/eye_close.png").convert_alpha()
@@ -335,7 +336,7 @@ class Edit(Mode):
             border_radius=10,
             border=3,
             border_color=lib.wet_blue,
-            func=lambda: self.text_input.ask_input(
+            func=lambda: self.text_input.ask_text_input(
                 lambda text: [self.add_layer(text), self.update_layer_selector()],
                 400,
                 200,
@@ -363,7 +364,7 @@ class Edit(Mode):
         self.save_button.set_color(lib.dark_turquoise)
 
     def set_tool(self, tool):
-        print(tool)
+        #print(tool)
         if not tool in self.tools:
             return
         self.tool = tool
@@ -425,7 +426,7 @@ class Edit(Mode):
                 func=lambda layer=layer: self.set_layer(layer[0]),
             )
             label.set_right_click_func(
-                lambda layer=layer: self.text_input.ask_input(
+                lambda layer=layer: self.text_input.ask_text_input(
                     lambda text, layer=layer: [
                         self.rename_layer(layer[0], text),
                         self.update_layer_selector(),
@@ -511,7 +512,7 @@ class Edit(Mode):
                 color=lib.darker_red,
                 border_radius=10,
                 uid="layer_button",
-                func=lambda layer=layer: self.text_input.ask_input(
+                func=lambda layer=layer: self.text_input.ask_text_input(
                     lambda text, layer=layer: self.remove_layer(layer[0])
                     if text and text.lower() in ["yes", "y"]
                     else None,
@@ -574,8 +575,7 @@ class Edit(Mode):
                     "index": index,
                     "collision": self.preview_tile.collision,
                     "flip": self.preview_tile.flip,
-                    "animation_duration": [5]
-                    * (len(lib.animated_tileset_cache[index]) - 1),
+                    "animated":True
                 }
             )
             self.preview_tile_img = lib.animated_tileset_get(
@@ -588,6 +588,7 @@ class Edit(Mode):
                     "index": index,
                     "collision": self.preview_tile.collision,
                     "flip": self.preview_tile.flip,
+                    "animated":False
                 }
             )
             self.preview_tile_img = lib.tileset_get(
@@ -803,7 +804,7 @@ class Edit(Mode):
 
                 elif mouse_pressed[0] and (
                     not self.hovered_layer_tile
-                    or self.preview_tile.format() != self.hovered_layer_tile.format()
+                    or not self.hovered_layer_tile.equals(self.preview_tile)
                 ):
                     self.modify()
                     self.app.level.set(

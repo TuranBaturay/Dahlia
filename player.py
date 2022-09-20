@@ -1,4 +1,3 @@
-from code import interact
 import pygame
 from pygame import Vector2
 from pygame.locals import *
@@ -84,7 +83,7 @@ class Player(pygame.sprite.Sprite):
 
         self.load_animations("Assets/Animation/Dahlia/jump.png", [3, 10000])
 
-        self.load_animations("Assets/Animation/Dahlia/fly.png", [10, 10, 10, 10])
+        self.load_animations("Assets/Animation/Dahlia/fly.png", [10]*8)
 
         self.display = _display
         self.animation_counter = 0

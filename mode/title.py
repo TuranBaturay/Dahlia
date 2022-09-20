@@ -96,12 +96,12 @@ class Title(Mode):
         var = 1
         for panel in self.gui_list:
             if not isinstance(panel,gui.Button):
-                self.display.blit(panel.image,panel.rect)
+                self.tmp_surf.blit(panel.image,panel.rect.move(0,-self.y_offset*0.7))
                 continue
             self.tmp_surf.blit(panel.image,panel.rect.move(-self.y_offset*0.5*var,self.y_offset*var))
             var+=2
         dx = 0-self.y_offset
-        self.y_offset += dx * (dt*5)
+        self.y_offset += dx * (dt*4)
         self.tmp_surf.set_alpha(255-abs(self.y_offset))
         self.display.blit(self.tmp_surf,(0,0))
     def on_enter_mode(self):

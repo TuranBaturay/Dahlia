@@ -57,8 +57,8 @@ class Chunk:
             tile.set(tile_data)
 
         if (
-            "animation_duration" in tile_data.keys()
-            or tile_data["index"] in lib.interactive_tiles
+            tile.animated
+            or tile.interactible
         ):
             self.draw_each_frame = True
         func = (

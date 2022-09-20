@@ -22,8 +22,9 @@ class Input(Mode):
         self.max_len = 20
         self.multiline = False
         self.func = None
+        self.mode = ""
 
-    def init_gui(self, width=100, height=100, label="label"):
+    def init_gui_text_input(self, width=100, height=100, label="label"):
         self.gui_list = []
         panel = gui.Panel(
             self.gui_list,
@@ -71,7 +72,7 @@ class Input(Mode):
             30,
             "Cancel",
             font=self.font_size,
-            func=self.cancel,
+            func=self.cancel_text_input,
             border_radius=10,
             color=lib.wet_blue,
         )
@@ -83,7 +84,7 @@ class Input(Mode):
             30,
             "OK",
             font=self.font_size,
-            func=self.validate,
+            func=self.validate_text_input,
             color=lib.wet_blue,
             border_radius=10,
         )
@@ -92,38 +93,111 @@ class Input(Mode):
         cancel.rect.right = ok.rect.x - 10
         cancel.rect.y = ok.rect.y
 
-    def ask_input(
+    def init_gui_yesno(self,label="label"):
+        self.gui_list = []
+        width = 300
+        height = 100
+        panel = gui.Panel(
+            self.gui_list,
+            0,
+            0,
+            width,
+            height,
+            lib.darker_blue,
+            border_radius=10,
+            border=3,
+            border_color=lib.wet_blue,
+        )
+        panel.rect.center = (lib.WIDTH // 2, lib.HEIGHT // 2)
+        gui.TextBox(
+            self.gui_list,
+            *panel.rect.topleft,
+            width,
+            30,
+            color=lib.wet_blue,
+            text=label,
+            font=self.font_size,
+            align="left",
+            border_radius=10
+        )     
+        no = gui.Button(
+            self.gui_list,
+            0,
+            0,
+            40,
+            30,
+            "No",
+            font=self.font_size,
+            func=self.cancel_yesno,
+            border_radius=10,
+            color=lib.dark_red,
+        )
+        yes = gui.Button(
+            self.gui_list,
+            0,
+            0,
+            40,
+            30,
+            "Yes",
+            font=self.font_size,
+            func=self.validate_yesno,
+            color=lib.dark_turquoise,
+            border_radius=10,
+        )
+        no.rect.bottomright = yes.rect.bottomleft = panel.rect.midbottom
+        yes.rect.move_ip(10,-10)
+        no.rect.move_ip(-10,-10)
+
+    def ask_text_input(
         self, func, width, height, label="Label", max_len=20, multiline=False
     ):
         self.max_len = max_len
         self.multiline = multiline
-        self.init_gui(width, height, label)
+        self.init_gui_text_input(width, height, label)
         self.func = func
         pygame.event.post(self.on_event)
         self.place_cursor()
+        self.mode = "text"
 
-    def update(self, dt, mouse, mouse_button, mouse_pressed):
+    def ask_yesno(self,func,label="Label"):
+        self.init_gui_yesno(label)
+        self.func =func
+        pygame.event.post(self.on_event)
+        self.mode = "yesno"
+
+    def active_update(self, dt, mouse, mouse_button, mouse_pressed):
         # self.display.blit(self.app.display_stamp,(0,0))
-        super().update(dt, mouse, mouse_button, mouse_pressed)
-        if self.animation_counter > self.blink_speed:
+        super().active_update(dt, mouse, mouse_button, mouse_pressed)
+        if self.mode == "text":
+            if self.animation_counter > self.blink_speed:
 
-            pygame.draw.rect(self.display, (200, 200, 200), self.cursor_rect)
+                pygame.draw.rect(self.display, (200, 200, 200), self.cursor_rect)
 
-        self.animation_counter += 60 * dt
-        if self.animation_counter > self.blink_speed * 2:
-            self.animation_counter = 0
+            self.animation_counter += 60 * dt
+            if self.animation_counter > self.blink_speed * 2:
+                self.animation_counter = 0
 
-    def cancel(self):
+    def validate_text_input(self):
+        pygame.event.post(self.off_event)
+        if self.func:
+            self.func(self.db.get_text())
+        self.clear_text()
+
+    def cancel_text_input(self):
         self.clear_text()
         pygame.event.post(self.off_event)
         if self.func:
             self.func(None)
 
-    def validate(self):
+    def validate_yesno(self):
         pygame.event.post(self.off_event)
         if self.func:
-            self.func(self.db.get_text())
-        self.clear_text()
+            self.func(True)
+
+    def cancel_yesno(self):
+        pygame.event.post(self.off_event)
+        if self.func:
+            self.func(False)
 
     def get_text(self):
         return self.db.text
@@ -137,30 +211,36 @@ class Input(Mode):
         self.cursor_rect.move_ip(*self.db.rect.topleft)
 
     def onkeydown(self, key, caps=None):
-        if key == K_ESCAPE:
-            self.cancel()
-            return
-        key_str = pygame.key.name(key)
-        if caps:
-            key_str = key_str.upper()
-        if not len(key_str) == 1:
-            if key == K_BACKSPACE and len(self.db.text) > 0:
-                self.db.set_text(self.db.text[:-1])
-            elif key == K_SPACE and len(self.db.text) < self.max_len:
-                self.db.set_text(self.db.text + " ")
-            elif key == K_RETURN:
-                if self.multiline and caps:
-                    self.db.set_text(self.db.text + "\n")
-                else:
-                    self.validate()
-            elif key == K_DELETE:
-                self.db.clear_text()
+        if self.mode == "text":
+            if key == K_ESCAPE:
+                self.cancel_text_input()
+                return
+            key_str = pygame.key.name(key)
+            if caps:
+                key_str = key_str.upper()
+            if not len(key_str) == 1:
+                if key == K_BACKSPACE and len(self.db.text) > 0:
+                    self.db.set_text(self.db.text[:-1])
+                elif key == K_SPACE and len(self.db.text) < self.max_len:
+                    self.db.set_text(self.db.text + " ")
+                elif key == K_RETURN:
+                    if self.multiline and caps:
+                        self.db.set_text(self.db.text + "\n")
+                    else:
+                        self.validate_text_input()
+                elif key == K_DELETE:
+                    self.db.clear_text()
 
-        elif key_str.isalnum():
-            if len(self.db.text) < self.max_len:
-                self.db.set_text(self.db.text + key_str)
+            elif key_str.isalnum():
+                if len(self.db.text) < self.max_len:
+                    self.db.set_text(self.db.text + key_str)
 
-        self.place_cursor()
+            self.place_cursor()
+        elif self.mode == "yesno":
+            if key== K_ESCAPE:
+                self.cancel_yesno()
+            if key == K_RETURN:
+                self.validate_yesno()
 
     def on_enter_mode(self):
         pygame.key.set_repeat(300, 20)

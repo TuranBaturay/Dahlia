@@ -94,7 +94,7 @@ class LevelViewer(Mode):
         )
 
         new.set_func(
-            lambda: self.ti.ask_input(
+            lambda: self.ti.ask_text_input(
                 lambda text: self.add_level(text) if text else None,
                 400,
                 200,
@@ -217,15 +217,12 @@ class LevelViewer(Mode):
 
         remove_button = lib.get_by_id(self.gui_list, "remove_button")[0]
         remove_button.set_func(
-            lambda: self.ti.ask_input(
+            lambda: self.ti.ask_yesno(
                 # lambda text,level_name=level_name: self.remove_level(level_name) if (text!=None and text.lower()=="yes") else print(text),
-                lambda text: self.remove_level(level_name)
-                if text and text.lower() in ["yes", "y"]
+                lambda value: self.remove_level(level_name)
+                if value
                 else None,
-                400,
-                200,
-                f"Delete '{level_name}' ?  (Yes/No)",
-                3,
+                f"Delete '{level_name}' ?",
             )
         )
 

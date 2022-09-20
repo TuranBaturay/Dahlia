@@ -240,8 +240,6 @@ class Settings(Mode):
     def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
         if round(self.x_offset) >= 0:
             self.state = "active"
-            self.active_update(dt, mouse, mouse_button, mouse_pressed)
-            return
         self.display.blit(self.dim_surf, (0, 0))
         if self.tmp_surf.get_alpha() != int(255 + self.x_offset):
             self.tmp_surf.set_alpha(int(255 + self.x_offset))
@@ -257,7 +255,6 @@ class Settings(Mode):
         if round(self.x_offset) <= -255:
             self.state = "active"
             pygame.event.post(self.exit_event)
-            return
         self.display.blit(self.dim_surf, (0, 0))
         if self.tmp_surf.get_alpha() != int(255 + self.x_offset):
             self.tmp_surf.set_alpha(int(255 + self.x_offset))

@@ -29,7 +29,7 @@ def blend_color(color1, color2):
     return color2
 
 
-FPS = 0
+FPS = 120
 GRAVITY = 2700
 FRICTION = 0.7
 WIDTH = 1280  # 1024

@@ -51,3 +51,4 @@ class Mode:
     def on_exit_mode(self, exit_event):
         self.state = "exit"
         self.exit_event = exit_event
+

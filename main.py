@@ -25,30 +25,23 @@ pygame.mixer.init(channels=4)
 
 FLAGS = 0
 
-_screen = pygame.display.set_mode(
-    (lib.WIDTH, lib.HEIGHT), FLAGS
-)  # main screen - display is blitted on this
 
-
-# _display = pygame.surface.Surface(
-#    (lib.WIDTH, lib.HEIGHT)
-# )  # game screen - everything is blitted on here
-
-_display = _screen
-
-_clock = pygame.time.Clock()
-icon = pygame.image.load("Assets/icons/icon.png").convert_alpha()
-pygame.display.set_caption("Dahlia")
-pygame.display.set_icon(icon)
 ################################################################################################
 
 
 class App:
-    def __init__(self, _display) -> None:
-        # Load ressources
-        self.debugger = Debugger(_screen)
-        self._display = _display
-        self.screen = _screen
+    def __init__(self) -> None:
+        self.clock = pygame.time.Clock()
+        self.screen = pygame.display.set_mode(
+            (lib.WIDTH, lib.HEIGHT), FLAGS
+        )
+        icon = pygame.image.load("Assets/icons/icon.png").convert_alpha()
+        pygame.display.set_caption("Dahlia")
+        pygame.display.set_icon(icon)
+
+
+
+        self.debugger = Debugger(self.screen)
         self.musics = {}
         music_path = "Audio/music/"
         for file in os_listdir(music_path):
@@ -71,9 +64,9 @@ class App:
         # Class instances
 
         self.camera = Camera(self)
-        self.player = Player(_display, self)
-        self.cat = Cat(_display, self, self.player)
-        self.level = Level(_display, self)
+        self.player = Player(self.screen, self)
+        self.cat = Cat(self.screen, self, self.player)
+        self.level = Level(self.screen, self)
         self.bgm_channel = pygame.mixer.Channel(1)
 
         # Class setup
@@ -93,15 +86,15 @@ class App:
             self.save_level("level")
 
         self.level.load_from_file(self.selected_level)
-        self.input_mode = mode.Input(self, _display)
+        self.input_mode = mode.Input(self, self.screen)
         self.mode_dict = {
-            "dialog": mode.Dialog(self, _display),
-            "game": mode.Game(self, _display),
-            "settings": mode.Settings(self, _display),
-            "level_viewer": mode.LevelViewer(self, _display),
-            "inspector": mode.Inspector(self, _display),
-            "edit": mode.Edit(self, _display),
-            "title": mode.Title(self, _display),
+            "dialog": mode.Dialog(self, self.screen),
+            "game": mode.Game(self, self.screen),
+            "settings": mode.Settings(self, self.screen),
+            "level_viewer": mode.LevelViewer(self, self.screen),
+            "inspector": mode.Inspector(self, self.screen),
+            "edit": mode.Edit(self, self.screen),
+            "title": mode.Title(self, self.screen),
             "input": self.input_mode,
         }
 
@@ -259,7 +252,7 @@ class App:
         self.playing_character = char
         self.playing_character.toggle_control(True)
 
-    def update_vignette(self, _screen, dt):
+    def update_vignette(self, dt):
         if self.vignette_open < lib.WIDTH:
 
             self.vignette_open = (
@@ -273,7 +266,7 @@ class App:
                     self.vignette_open,
                 )
 
-            _screen.blit(self.effect_surf, (0, 0))
+            self.screen.blit(self.effect_surf, (0, 0))
         elif self.vignette_close:
             self.effect_surf.fill((0, 0, 0))
 
@@ -293,7 +286,7 @@ class App:
                     self.vignette_func()
                     self.vignette_func = None
                 self.vignette_open = -200
-            _screen.blit(self.effect_surf, (0, 0))
+            self.screen.blit(self.effect_surf, (0, 0))
 
     def get_virtual_pos(self, pos):
         virtual_pos = [
@@ -305,7 +298,7 @@ class App:
     def quit(self):
         self.loop = False
 
-    def main(self, _screen, _clock):
+    def main(self):
         self.loop = True
         mouse_button = {1: False, 2: False, 3: False, 4: False, 5: False}
         caps = False
@@ -315,7 +308,6 @@ class App:
             time = pygame.time.get_ticks()
             dt = (time - last_time) / 1000
             last_time = time
-            _clock.tick(lib.FPS)
             if self.screen_shake[2] > 30:
                 self.screen_shake = [0, 0, 0, False]
             if self.screen_shake[3]:
@@ -362,8 +354,8 @@ class App:
             if (
                 not pygame.key.get_focused() or continue_flag
             ):  # Lower fps when app in Background
-                _clock.tick(10)
-                self.debugger.set("FPS", str(int(_clock.get_fps())), True)
+                self.clock.tick(10)
+                self.debugger.set("FPS", str(int(self.clock.get_fps())), True)
                 self.debugger.update()
                 pygame.display.flip()
 
@@ -375,7 +367,7 @@ class App:
             self.virtual_mouse = self.get_virtual_pos(mouse)
             #print(pygame.time.get_ticks())
 
-            self.debugger.set("FPS", str(int(_clock.get_fps())), True)
+            self.debugger.set("FPS", str(int(self.clock.get_fps())), True)
             self.debugger.set("", str(dt * 1000) + "ms", True)
             self.debugger.set("Resolution", (lib.WIDTH, lib.HEIGHT))
             self.debugger.set("vm", self.virtual_mouse)
@@ -393,16 +385,18 @@ class App:
             self.keyboard_mouse_input(keys)
 
             if self.mode in self.mode_dict:
-                # print(self.mode)
                 self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
-            # _screen.blit(_display, (0, 0))
-            self.update_vignette(_screen, dt)
+            self.update_vignette(dt)
             self.debugger.update()
-            pygame.display.update()
+            
+            pygame.display.flip()
+            
+            self.clock.tick(lib.FPS)
+
 
         pygame.quit()
 
 
 if __name__ == "__main__":
-    game = App(_display)
-    game.main(_screen, _clock)
+    game = App()
+    game.main()
