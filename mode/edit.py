@@ -5,7 +5,7 @@ from pygame.locals import *
 from pygame.math import Vector2
 import pygame
 from tile import Tile
-from math import cos
+from math import cos,ceil
 
 
 class Edit(Mode):
@@ -48,6 +48,7 @@ class Edit(Mode):
         self.shift_key = False
         self.previous_state = None
 
+        #spawn indicator
         self.spawn_offset = Vector2(32, 32)
         self.spawn_indicator = pygame.Surface((64, 64), pygame.SRCALPHA)
         s = lib.render_text("SPAWN", lib.small_font, lib.cloud_white)
@@ -58,14 +59,15 @@ class Edit(Mode):
         super().__init__(app, display)
         self.set_tool("brush")
 
+
     def init_gui(self):
         self.tool_buttons = {}
 
         def release_sf(self: gui.SelectionFrame):
             self.origin[0] = round(self.origin[0] / 64) * 64
             self.origin[1] = round(self.origin[1] / 64) * 64
-            self.rect.w = round(self.rect.w / 64) * 64
-            self.rect.h = round(self.rect.h // 64) * 64
+            self.rect.w = ceil(self.rect.w / 64) * 64
+            self.rect.h = ceil(self.rect.h // 64) * 64
             self.rect.topleft = self.origin
 
         self.gui_list = []
@@ -594,6 +596,7 @@ class Edit(Mode):
             self.preview_tile_img = lib.tileset_get(
                 self.preview_tile.index, self.preview_tile.flip
             )
+        self.set_tool("brush")
 
     def set_page(self, page=0):
         tileset = (
@@ -740,16 +743,35 @@ class Edit(Mode):
         self.app.player.update(0)
         self.update_layer_selector()
         self.set_layer(self.current_layer)
-        super().on_enter_mode()
+        self.on_enter_mode_glide_in()
 
+    def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.fill(lib.dark_turquoise)
+        res = self.app.level.blit_layers(hitbox=self.app.show_hitbox)
+        self.app.debugger.set("CPH", str(res))
+
+        self.app.player.draw()
+
+        self.glide_in_update(dt, mouse, mouse_button, mouse_pressed)
+        self.app.camera.target += self.camera_target
+
+        self.app.camera.update(dt)
     def on_exit_mode(self, exit_event):
         self.app.player.toggle_control(True)
 
         for layer in self.app.level.layers:
             layer[1].show()
-        super().on_exit_mode(exit_event)
+        super().on_exit_mode_glide_out(exit_event)
 
+    def exit_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.fill(lib.dark_turquoise)
+        self.app.level.update(dt)
+        res = self.app.level.blit_layers(hitbox=self.app.show_hitbox)
+        self.app.debugger.set("CPH", str(res))
+        self.app.player.draw()
+        return super().glide_out_update(dt, mouse, mouse_button, mouse_pressed)
     def active_update(self, dt, mouse, mouse_button, mouse_pressed):
+
         self.display.fill(lib.dark_turquoise)
         self.app.level.update(dt)
         res = self.app.level.blit_layers(hitbox=self.app.show_hitbox)
@@ -764,6 +786,7 @@ class Edit(Mode):
             self.hovered_layer_tile = self.app.level.get(
                 *self.app.virtual_mouse, self.current_layer
             )
+        
         self.display.blit(
             self.spawn_indicator,
             self.app.level.spawn_point - self.app.camera.int_pos - self.spawn_offset,
@@ -873,12 +896,12 @@ class Edit(Mode):
                     self.remove_selection_button.show()
 
         elif self.tool == "spawn":
-            if mouse_button[1]:
+            if mouse_button[1] and not self.main_panel.rect.collidepoint(mouse):
+                self.modify()
                 self.app.level.set_spawn_point(
                     self.app.virtual_mouse[0] * 64 + 32,
                     self.app.virtual_mouse[1] * 64 + 32,
                 )
-                # print(self.app.virtual_mouse[0] * 64 +32,self.app.virtual_mouse[1] * 64 + 32)
 
         for panel in self.gui_list:
             panel.update(dt, mouse, mouse_button, mouse_pressed)

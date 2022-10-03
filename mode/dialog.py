@@ -19,6 +19,7 @@ class Dialog(Mode):
         self.queue = []
         self.default_speed = 0.5
         self.text_speed = self.default_speed
+        self.master_commands = []
         self.image = None
         self.sprite_offset = 0
         self.gui_offset = -lib.WIDTH
@@ -37,6 +38,7 @@ class Dialog(Mode):
         self.resume_event = pygame.event.Event(lib.DIALOG, action="RESUME")
         self.exiting = False
         self.x_offset_target = 0
+        self.first_commands_flag =False
         self.exit_event = None
 
     def init_gui(self):
@@ -130,6 +132,7 @@ class Dialog(Mode):
         self.fcounter = 0.0
         self.dialog_box.set_text("")
         self.dialog_box.set_default_text_color(lib.cloud_white)
+        self.master_commands = []
 
         if len(self.queue) == 0:
             self.display_stamp = None
@@ -139,36 +142,33 @@ class Dialog(Mode):
                 "mood": "",
                 "text": "",
             }
-            self.image = None
             self.text = ""
             self.app.set_mode(self.app.previous_mode)
             return
-        name = (
-            self.queue[0]["name"]
-            if "name" in self.queue[0]
-            else self.dialog_info["name"]
-        )
-        mood = (
-            self.queue[0]["mood"]
-            if "mood" in self.queue[0]
-            else self.dialog_info["mood"]
-        )
+        
         # print(self.dialog_info['sprite_x'])
-        self.set_image(name, mood)
-        # print(self.dialog_info['sprite_x'])
-
         self.dialog_info.update(self.queue.pop(0))
         # print(self.dialog_queue)
+
 
         self.dialog_next_button.disable()
         self.text = self.dialog_info["text"]
 
-        self.text_len = len(self.text)
 
+        self.text_len = len(self.text)
+        self.master_commands = self.dialog_info["master_commands"]
+        for command in self.master_commands:
+            
+            self.run_command(command[1:-1].split(',')[1:])
     def queue_append(self, data):
         self.queue.append(data)
         if self.app.mode != "dialog":
             self.app.set_mode("dialog")
+
+    def run_command(self,command):
+        if not command[0] in self.commands:return
+        #print("recieved command : ", command)
+        getattr(self, command[0])(*command[1:])
 
     def active_update(self, dt, mouse, mouse_button, mouse_pressed):
         self.display.blit(self.app.display_stamp, (0, 0))
@@ -228,32 +228,35 @@ class Dialog(Mode):
                     )
 
         if dialog_command:
-            print("recieved command : ", dialog_command)
-            getattr(self, dialog_command[0])(*dialog_command[1:])
+            self.run_command(dialog_command)
 
     def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
-        if round(self.gui_offset)>=0:
-            self.gui_offset = 0
-            self.state = "active"
-        self.gui_offset+=10
-        for panel in self.gui_list:
-            if panel.visible: self.display.blit(panel.image,panel.rect.move(self.gui_offset,0))
-            
+        self.display.blit(self.app.display_stamp, (0, 0))
+        if self.image:
+            self.display.blit(self.image,(self.X_OFFSET,0))
+        super().glide_in_update( dt, mouse, mouse_button, mouse_pressed)
+    def exit_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.blit(self.app.display_stamp, (0, 0))
+        if self.image:
+            self.display.blit(self.image, (self.X_OFFSET, 0))
+        self.glide_out_update(dt, mouse, mouse_button, mouse_pressed)
+
+
 
     def on_enter_mode(self):
+        self.image = None
         self.next()
         self.gui_offset = -lib.WIDTH
-        super().on_enter_mode()
+        super().on_enter_mode_glide_in()
 
     def on_exit_mode(self, exit_event):
         self.exiting = True
         self.x_offset_target = -lib.WIDTH
-        super().on_exit_mode(exit_event)
-        print("test")
+        super().on_exit_mode_glide_out(exit_event)
 
     def onkeydown(self, key, caps=None):
         if key == K_x:
             if not self.dialog_next_button.disabled:
                 self.next()
-            elif "(" not in self.text[int(self.fcounter) + 1 :] and not self.wait:
+            elif "(" not in self.text[int(self.fcounter):] and not self.wait:
                 self.fcounter = self.text_len - 1

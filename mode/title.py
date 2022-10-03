@@ -2,6 +2,8 @@ from .mode import Mode
 import gui as gui
 import lib as lib
 import pygame
+from pygame.locals import *
+import random
 
 class Title(Mode):
     def __init__(self, app, display) -> None:
@@ -111,3 +113,8 @@ class Title(Mode):
         self.y_offset = 255
         
         return super().on_enter_mode()
+    def onkeydown(self, key, caps=None):
+        if self.state == "active":
+            if key == K_t:
+                self.app.get_input().ask_list(print,[str(random.randint(0,1000)) for _ in range(10)],"TEST")
+        

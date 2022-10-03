@@ -6,6 +6,7 @@ import pygame
 
 
 class Input(Mode):
+
     def __init__(self, app, display) -> None:
         self.font_size = 12
 
@@ -37,7 +38,7 @@ class Input(Mode):
             border=3,
             border_color=lib.wet_blue,
         )
-        panel.rect.center = (lib.WIDTH // 2, lib.HEIGHT // 2)
+        panel.rect.center = lib.DISPLAY_RECT.center
         gui.TextBox(
             self.gui_list,
             *panel.rect.topleft,
@@ -148,6 +149,54 @@ class Input(Mode):
         yes.rect.move_ip(10,-10)
         no.rect.move_ip(-10,-10)
 
+    def init_gui_list(self,data_list,label="label",width=600,height=400):
+        self.gui_list = []
+        panel = gui.Panel(
+            self.gui_list,
+            0,0,
+            width,height,
+            lib.dark_blue,3,lib.wet_blue,10,border_radii=[-1,-1,0,0]
+        )
+        panel.rect.center = lib.DISPLAY_RECT.center
+        label = gui.TextBox(
+            self.gui_list,
+            *panel.rect.topleft,
+            width,
+            30,
+            color=lib.wet_blue,
+            text=label,
+            font=self.font_size,
+            align="left",
+            border_radius=10
+        )
+
+        cancel = gui.Button(
+            self.gui_list,
+            0,0,80,30,"Cancel",func=self.cancel_list,
+            color=lib.wet_blue,border_radius=10,font=lib.small_font
+        )
+        cancel.rect.bottomleft = panel.rect.move(10,-10).bottomleft
+
+        x = 0
+        y = 0
+        for item  in data_list:
+            b = gui.Button(
+                self.gui_list,
+                0,0,120,25,item,font=lib.small_font,func=lambda item=item: self.validate_list(item),
+                color = lib.wet_blue,border_radius=10
+            )
+            if label.rect.move(10+x*130,10+y*35).bottom + 35 > cancel.rect.top:
+                y = 0
+                x+=1
+            b.rect.topleft = label.rect.move(10+x*130,10+y*35).bottomleft 
+            y+=1
+            
+    def ask_list(self,func,data_list,label):
+        self.func = func
+        self.init_gui_list(data_list,label=label)
+        pygame.event.post(self.on_event)
+        self.mode = "list"     
+
     def ask_text_input(
         self, func, width, height, label="Label", max_len=20, multiline=False
     ):
@@ -177,6 +226,7 @@ class Input(Mode):
             if self.animation_counter > self.blink_speed * 2:
                 self.animation_counter = 0
 
+#text mode
     def validate_text_input(self):
         pygame.event.post(self.off_event)
         if self.func:
@@ -189,6 +239,7 @@ class Input(Mode):
         if self.func:
             self.func(None)
 
+#yesno mode
     def validate_yesno(self):
         pygame.event.post(self.off_event)
         if self.func:
@@ -198,6 +249,17 @@ class Input(Mode):
         pygame.event.post(self.off_event)
         if self.func:
             self.func(False)
+
+#list mode
+    def validate_list(self,value):
+        pygame.event.post(self.off_event)
+        if self.func:
+            self.func(value)
+
+    def cancel_list(self):
+        pygame.event.post(self.off_event)
+        if self.func:
+            self.func(None)   
 
     def get_text(self):
         return self.db.text

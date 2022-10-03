@@ -14,7 +14,7 @@ class LevelViewer(Mode):
         self.refresh = pygame.image.load("Assets/icons/refresh.png").convert_alpha()
         super().__init__(app, display)
         self.select_level("level")
-
+        
     def init_gui(self):
         self.gui_list = []
 
@@ -272,6 +272,15 @@ class LevelViewer(Mode):
             self.init_gui()
             self.select_level(name)
 
+    def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.blit(self.app.display_stamp,(0,0))
+        self.glide_in_update(dt, mouse, mouse_button, mouse_pressed)
+
+    def on_exit_mode(self, exit_event):
+        return super().on_exit_mode_glide_out(exit_event)
+    def exit_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.blit(self.app.display_stamp,(0,0))
+        return super().glide_out_update(dt, mouse, mouse_button, mouse_pressed)
     def on_enter_mode(self):
         self.init_gui()
-        super().on_enter_mode()
+        self.on_enter_mode_glide_in()

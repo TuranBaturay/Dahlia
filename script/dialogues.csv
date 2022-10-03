@@ -1,2 +1,2 @@
 ID|en|fr|es|jp
-test|(set_image,dahlia,happy)I am a {dark_red power}ful witch !§(set_image,dahlia,thinking)This is my thinking sprite !|(set_image,dahlia,happy)Je suis une sorcière très {dark_red puissante} !|estext|私は強力な魔女です!
+test|(mc,set_image,dahlia,thinking)This is an information regarding {dark_green colors in text.} Also here’s a very long {sky_blue sentence} for testing purposes.\nI can force a new line too.§(set_image,dahlia,happy)Now isn't this {dark_red AMAZING} ?|(mc,set_image,dahlia,happy)Ceci est une information au sujet des {dark_green couleurs dans le texte.} Voici également une longue {sky_blue phrase} à des fins de test.\nJe peux aussi forcer une nouvelle ligne.§(set_image,dahlia,happy)N’est-ce pas {dark_red INCROYABLE} ?||

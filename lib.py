@@ -3,6 +3,7 @@ import json
 import os
 from pandas import read_csv as pd_read_csv
 from pandas import isnull as pd_isnull
+import re
 
 
 df = pd_read_csv("script/dialogues.csv", sep="|", header=[0])
@@ -97,10 +98,14 @@ def post_dialog(act, dat):
 
 def post_dialogs_by_id(uid):
     data = get_dialog_data(uid)
+    master_commands= []
     if not data:
         return
-    for string in data.split("§"):
-        post_dialog("SAY", {"text": string})
+    for message in data.split("§"):
+        #print(message)
+        master_commands = re.findall("\(mc *,[^\)]+\)",message)
+        message = re.sub("\(mc *,[^\)]+\)",'',message)
+        post_dialog("SAY", {"text": message,"master_commands":master_commands})
 
 
 def get_by_id(gui_list, uid):
