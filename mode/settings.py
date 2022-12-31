@@ -9,7 +9,8 @@ class Settings(Mode):
     def __init__(self, app, display) -> None:
         super().__init__(app, display)
         self.track = 0
-        self.toggle_music.toggle(False)
+        self.volume_slider.set_func(self.app.music_set_volume)
+        self.volume_slider.set_value(0.5)
         self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT), pygame.SRCALPHA)
         self.tmp_surf = self.dim_surf.copy()
         self.dim_surf.fill((0, 0, 0, 0))
@@ -76,20 +77,9 @@ class Settings(Mode):
             border_radius=10,
             color=label_color
         )
-
-        self.toggle_music = gui.Toggle(
-            self.gui_list,
-            *audio_label.rect.move(10, 10).bottomleft,
-            80,
-            30,
-            "ON",
-            font=12,
-            color=lib.wet_blue,
-            border_radius=10
-        )
         self.volume_slider = gui.Slider(
             self.gui_list,
-            *self.toggle_music.rect.move(10, 0).topright,
+            *audio_label.rect.move(10, 10).bottomleft,
             220,
             30,
             "Volume",
@@ -97,12 +87,7 @@ class Settings(Mode):
             border_radius=10,
             color=lib.wet_blue
         )
-        self.toggle_music.set_func(
-            func=lambda x: [
-                self.volume_slider.set_value(x),
-                self.toggle_music.set_text("ON" if x else "OFF"),
-            ]
-        )
+        
         video_control = gui.Panel(
             self.gui_list,
             *audio_control.rect.move(0, 10).bottomleft,

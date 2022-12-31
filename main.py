@@ -106,6 +106,10 @@ class App:
         self.vignette_set_source()
 
         pygame.mixer.set_reserved(1)
+        
+        self.music_set_track("theme")
+
+        
         self.virtual_mouse = [0, 0]
         self.previous_mode = ""
         self.mode = "title"
@@ -196,9 +200,13 @@ class App:
         lib.remove_file(lib.level_path + name + ".json")
         return True
 
+
+
     def music_set_volume(self, value):
         self.bgm_channel.set_volume(value)
-
+    def music_set_track(self,title):
+        if not title in self.musics : return False
+        self.bgm_channel.play(self.musics[title],loops=-1,fade_ms=100)
     def get_mouse_pos(self):
         pos = Vector2(pygame.mouse.get_pos())
         pos.x -= self.x_offset

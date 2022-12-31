@@ -48,6 +48,9 @@ class Edit(Mode):
         self.shift_key = False
         self.previous_state = None
 
+        self.camera_vel = Vector2(0,0)
+        self.camera_speed = 600
+
         #spawn indicator
         self.spawn_offset = Vector2(32, 32)
         self.spawn_indicator = pygame.Surface((64, 64), pygame.SRCALPHA)
@@ -55,9 +58,9 @@ class Edit(Mode):
         r = s.get_rect()
         r.center = (32, 32)
         self.spawn_indicator.blit(s, r)
+        self.set_tool("brush")
 
         super().__init__(app, display)
-        self.set_tool("brush")
 
 
     def init_gui(self):
@@ -646,12 +649,15 @@ class Edit(Mode):
         if text in self.app.level.get_layer_list():
             return
         self.modify()
-        self.app.level.add_layer(text)
+        if self.app.level.add_layer(text):
+            self.set_layer(text)
+        
 
     def remove_layer(self, layer):
         self.modify()
 
         res = self.app.level.remove_layer(layer)
+        self.set_layer()
         return res
 
     def swap_layers(self, index1, index2):
@@ -730,11 +736,11 @@ class Edit(Mode):
 
     def onkeypress(self, keys):
         # print((keys[K_RIGHT]-keys[K_LEFT])*10)
-        self.camera_target.x = (keys[K_RIGHT] - keys[K_LEFT]) * (
-            10 if self.shift_key else 20
+        self.camera_vel.x = (keys[K_RIGHT] - keys[K_LEFT]) * (
+            1 if not self.shift_key else 2
         )
-        self.camera_target.y = (keys[K_DOWN] - keys[K_UP]) * (
-            10 if self.shift_key else 20
+        self.camera_vel.y = (keys[K_DOWN] - keys[K_UP]) * (
+            1 if not self.shift_key else 2
         )
 
     def on_enter_mode(self):
@@ -925,7 +931,9 @@ class Edit(Mode):
             else:
                 pygame.draw.rect(self.display, lib.darker_blue, tile_button.rect, 3)
 
-        self.app.camera.target += self.camera_target
+        self.app.camera.target += self.camera_vel * dt * self.camera_speed
+        self.camera_vel.update(0,0)
+        #self.app.camera.target += self.camera_target
 
         self.app.camera.update(dt)
         self.app.debugger.set(

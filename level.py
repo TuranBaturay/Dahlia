@@ -188,6 +188,7 @@ class Level:
             ]
         )
         self.layer_count += 1
+        return True
 
     def rename_layer(self, oldlayer, newlayer):
         index = self.get_layer_index(oldlayer)

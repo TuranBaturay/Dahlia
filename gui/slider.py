@@ -74,6 +74,9 @@ class Slider(Panel):
         self.text_panel.draw()
         self.draw()
 
+    def set_func(self,func):
+        self.func = func
+
     def click(self):
         if self.func:
             self.func()
