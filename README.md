@@ -1,7 +1,7 @@
 # Dahlia
 A game made with pygame
 
-Dependencies : pygame, pandas, openpyxl
+Dependencies : pygame, pandas, 
 
 Commands : 
 
