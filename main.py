@@ -392,6 +392,7 @@ class App:
 
             self.keyboard_mouse_input(keys)
 
+
             if self.mode in self.mode_dict:
                 self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
             self.update_vignette(dt)
