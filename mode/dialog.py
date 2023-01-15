@@ -243,7 +243,7 @@ class Dialog(Mode):
 
 
 
-    def on_enter_mode(self,bool:skip=False):
+    def on_enter_mode(self,skip:bool=False):
         self.image = None
         self.next()
         self.gui_offset = -lib.WIDTH

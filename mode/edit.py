@@ -743,7 +743,7 @@ class Edit(Mode):
             1 if not self.shift_key else 2
         )
 
-    def on_enter_mode(self,bool:skip=False):
+    def on_enter_mode(self,skip:bool=False):
         # self.inspector_button.hide()
         self.app.player.toggle_control(False)
         self.app.player.update(0)

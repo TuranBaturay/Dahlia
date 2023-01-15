@@ -106,7 +106,7 @@ class Title(Mode):
         self.y_offset += dx * (dt*4)
         self.tmp_surf.set_alpha(255-abs(self.y_offset))
         self.display.blit(self.tmp_surf,(0,0))
-    def on_enter_mode(self,bool:skip=False):
+    def on_enter_mode(self,skip:bool=False):
         if self.app.previous_mode != "title":
             self.state ="active"
             return

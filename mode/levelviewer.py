@@ -281,7 +281,7 @@ class LevelViewer(Mode):
     def exit_update(self, dt, mouse, mouse_button, mouse_pressed):
         self.display.blit(self.app.display_stamp,(0,0))
         return super().glide_out_update(dt, mouse, mouse_button, mouse_pressed)
-    def on_enter_mode(self,bool:skip = False):
+    def on_enter_mode(self,skip:bool = False):
         self.init_gui()
         if skip:
             super().on_enter_mode()

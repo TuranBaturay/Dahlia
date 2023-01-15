@@ -304,7 +304,7 @@ class Input(Mode):
             if key == K_RETURN:
                 self.validate_yesno()
 
-    def on_enter_mode(self,bool:skip=False):
+    def on_enter_mode(self,skip:bool=False):
         pygame.key.set_repeat(300, 20)
         self.display_stamp = self.display.copy()
         super().on_enter_mode()

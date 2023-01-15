@@ -339,9 +339,9 @@ class App:
                         self.mode_dict["dialog"].queue_append(event.data)
                 elif event.type == lib.INPUTBOX:
                     if event.key == "ON":
-                        self.set_mode("input",call_exit = False)
+                        self.set_mode("input",call_exit=False,call_enter=False)
                     elif self.mode == "input":
-                        self.set_mode(self.previous_mode, False,False)
+                        self.set_mode(self.previous_mode, call_exit=False,call_enter =False)
                         mouse_button = {
                             1: False,
                             2: False,
