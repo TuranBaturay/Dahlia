@@ -49,7 +49,7 @@ class Mode:
     def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
         self.state = "active"
 
-    def on_enter_mode(self):
+    def on_enter_mode(self,bool:skip=False):
         self.state = "enter"
 
     def on_exit_mode(self, exit_event):

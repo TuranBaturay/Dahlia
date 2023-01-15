@@ -243,10 +243,13 @@ class Dialog(Mode):
 
 
 
-    def on_enter_mode(self):
+    def on_enter_mode(self,bool:skip=False):
         self.image = None
         self.next()
         self.gui_offset = -lib.WIDTH
+        if skip:
+            super().on_enter_mode()
+            return
         super().on_enter_mode_glide_in()
 
     def on_exit_mode(self, exit_event):

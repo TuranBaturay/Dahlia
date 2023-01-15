@@ -255,7 +255,7 @@ class Settings(Mode):
         self.x_offset = -1
         super().on_exit_mode(exit_event)
 
-    def on_enter_mode(self):
+    def on_enter_mode(self,bool:skip=False):
         super().on_enter_mode()
         self.x_offset = -255
         self.tmp_surf.fill((0, 0, 0))

@@ -743,12 +743,15 @@ class Edit(Mode):
             1 if not self.shift_key else 2
         )
 
-    def on_enter_mode(self):
+    def on_enter_mode(self,bool:skip=False):
         # self.inspector_button.hide()
         self.app.player.toggle_control(False)
         self.app.player.update(0)
         self.update_layer_selector()
         self.set_layer(self.current_layer)
+        if skip:
+            super().on_enter_mode()
+            return
         self.on_enter_mode_glide_in()
 
     def enter_update(self, dt, mouse, mouse_button, mouse_pressed):

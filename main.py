@@ -123,7 +123,7 @@ class App:
     def get_inspector(self):
         return self.mode_dict["inspector"]
 
-    def set_mode(self, mode, stamp=True, call_exit=True):
+    def set_mode(self, mode, stamp=True, call_exit=True,call_enter=True):
 
         if self.previous_mode and call_exit:
             self.mode_dict[self.mode].on_exit_mode(
@@ -136,9 +136,7 @@ class App:
         self.previous_mode = self.mode
         self.mode = mode
         if mode in self.mode_dict:
-            self.mode_dict[mode].on_enter_mode()
-        # print("Mode : ",self.mode)
-        # print("Previous mode :",self.previous_mode)
+            self.mode_dict[mode].on_enter_mode(skip = (call_enter == False))
 
     def get_current_tileset(self):
         return self.tileset_list[self.edit_info["tileset_index"]]
@@ -228,7 +226,7 @@ class App:
 
     def onkeydown(self, key, caps=None):
         # Independent key actions
-        if key == K_d:
+        if key == K_d and self.mode != "input":
             self.debugger.toggle_visibility()
             self.show_hitbox = self.debugger.visible
         elif key == K_r:
@@ -341,9 +339,9 @@ class App:
                         self.mode_dict["dialog"].queue_append(event.data)
                 elif event.type == lib.INPUTBOX:
                     if event.key == "ON":
-                        self.set_mode("input")
+                        self.set_mode("input",call_exit = False)
                     elif self.mode == "input":
-                        self.set_mode(self.previous_mode, False)
+                        self.set_mode(self.previous_mode, False,False)
                         mouse_button = {
                             1: False,
                             2: False,
