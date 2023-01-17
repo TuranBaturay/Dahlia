@@ -7,13 +7,14 @@ import pygame
 import os
 import datetime as datetime
 
+DEFAULT_LEVEL = "level"
 
 class LevelViewer(Mode):
     def __init__(self, app: App, display) -> None:
         self.ti = app.get_input()
         self.refresh = pygame.image.load("Assets/icons/refresh.png").convert_alpha()
         super().__init__(app, display)
-        self.select_level("level")
+        self.select_level(DEFAULT_LEVEL)
         
     def init_gui(self):
         self.gui_list = []
@@ -279,10 +280,11 @@ class LevelViewer(Mode):
     def on_exit_mode(self, exit_event):
         return super().on_exit_mode_glide_out(exit_event)
     def exit_update(self, dt, mouse, mouse_button, mouse_pressed):
-        self.display.blit(self.app.display_stamp,(0,0))
+        self.display.blit(self.get_stamp(),(0,0))
         return super().glide_out_update(dt, mouse, mouse_button, mouse_pressed)
     def on_enter_mode(self,skip:bool = False):
         self.init_gui()
+        self.refresh_stamp()
         if skip:
             super().on_enter_mode()
             return

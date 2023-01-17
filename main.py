@@ -3,11 +3,9 @@ from os.path import isfile as os_isfile
 from os.path import join as os_join
 from os import listdir as os_listdir
 from os import chdir as os_chdir
-
 # Set the directory for export aas .exe
 if getattr(sys, "frozen", False):
     os_chdir(sys._MEIPASS)
-
 from level import Level
 from player import Player
 from cat import Cat
@@ -25,9 +23,7 @@ pygame.mixer.init(channels=4)
 
 FLAGS = 0
 
-
 ################################################################################################
-
 
 class App:
     def __init__(self) -> None:
@@ -138,6 +134,15 @@ class App:
         if mode in self.mode_dict:
             self.mode_dict[mode].on_enter_mode(skip = (call_enter == False))
 
+    def get_stamp(self):
+        return self.display_stamp
+    def set_stamp(self,surf):
+        self.display_stamp = surf
+        print("called set stamp")
+        
+    def get_display_copy(self):
+        return self.screen.copy()
+
     def get_current_tileset(self):
         return self.tileset_list[self.edit_info["tileset_index"]]
 
@@ -234,7 +239,6 @@ class App:
         self.mode_dict[self.mode].onkeydown(key, caps)
 
     def shake_screen(self):
-        # print("HEY")
         if not self.screen_shake[3]:
             self.screen_shake[3] = True
             self.screen_shake[2] = 0.1
@@ -371,21 +375,18 @@ class App:
             mouse_pressed = pygame.mouse.get_pressed()
 
             self.virtual_mouse = self.get_virtual_pos(mouse)
-            #print(pygame.time.get_ticks())
 
             self.debugger.set("FPS", str(int(self.clock.get_fps())), True)
-            self.debugger.set("", str(dt * 1000) + "ms", True)
             self.debugger.set("Resolution", (lib.WIDTH, lib.HEIGHT))
-            self.debugger.set("vm", self.virtual_mouse)
             self.debugger.set("m", mouse)
+            self.debugger.set("vm", self.virtual_mouse)
+
             self.debugger.set("Player position", str(self.player.rect.center))
             self.debugger.set("Player state", self.player.state)
 
             self.debugger.set("Camera ", self.camera.int_pos)
             self.debugger.set("Camera target", self.camera.target)
             self.debugger.set("Tiles ", f"total : {self.level.total}")
-            info = [layer[1].total for layer in self.level.layers]
-            self.debugger.set("Layer totals", info)
             self.debugger.set("info", len(self.level.layers))
 
             self.keyboard_mouse_input(keys)
@@ -393,6 +394,8 @@ class App:
 
             if self.mode in self.mode_dict:
                 self.mode_dict[self.mode].update(dt, mouse, mouse_button, mouse_pressed)
+
+                
             self.update_vignette(dt)
             self.debugger.update()
             
@@ -405,5 +408,5 @@ class App:
 
 
 if __name__ == "__main__":
-    game = App()
-    game.main()
+    app = App()
+    app.main()

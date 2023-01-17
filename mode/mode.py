@@ -13,10 +13,22 @@ class Mode:
         self.GLIDE_SPEED = 20
         self.X_OFFSET = 0
         self.init_gui()
+        self.stamp = self.app.get_stamp()
         
 
     def init_gui(self):
         pass
+    def in_enter_mode(self):
+        return self.state=="enter"
+    def in_exit_mode(self):
+        return self.state=="exit"
+    def in_active_mode(self):
+        return self.state=="update"
+
+    def refresh_stamp(self):
+        self.stamp = self.app.get_stamp()
+    def get_stamp(self):
+        return self.stamp
 
     def blit_gui(self):
         self.display.blits(

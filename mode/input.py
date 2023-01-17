@@ -12,7 +12,6 @@ class Input(Mode):
 
         super().__init__(app, display)
         self.dim_surf = pygame.Surface((lib.WIDTH, lib.HEIGHT))
-        self.display_stamp = None
         self.dim_surf.fill((50, 50, 50))
         self.dim_surf.set_alpha(70)
         self.on_event = pygame.event.Event(lib.INPUTBOX, key="ON")
@@ -306,10 +305,10 @@ class Input(Mode):
 
     def on_enter_mode(self,skip:bool=False):
         pygame.key.set_repeat(300, 20)
-        self.display_stamp = self.display.copy()
+        self.refresh_stamp()
         super().on_enter_mode()
 
     def on_exit_mode(self, exit_event):
         pygame.key.set_repeat()
-        self.app.display_stamp = self.display_stamp
+        self.app.set_stamp(self.get_stamp())
         super().on_exit_mode(exit_event)

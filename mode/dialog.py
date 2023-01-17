@@ -258,6 +258,7 @@ class Dialog(Mode):
         super().on_exit_mode_glide_out(exit_event)
 
     def onkeydown(self, key, caps=None):
+        if self.state != "active": return
         if key == K_x:
             if not self.dialog_next_button.disabled:
                 self.next()

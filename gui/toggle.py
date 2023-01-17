@@ -26,7 +26,7 @@ class Toggle(Button):
         camera=None,
     ):
         self.text_panel: TextBox = None
-        self.box = pygame.rect.Rect(0, 0, height // 2.8, height // 2.8)
+        self.box = pygame.rect.Rect(0, 0, height // 2.5, height // 2.5)
         self.box.midleft = (10, height // 2)
         self.value = False
         super().__init__(

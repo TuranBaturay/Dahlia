@@ -705,7 +705,8 @@ class Edit(Mode):
 
         if key == K_q:
             self.app.player.go_to(
-                [i * 64 + 32 for i in self.app.get_virtual_mouse_pos()], "center"
+                [i * 64 + 32 for i in self.app.get_virtual_mouse_pos()],
+                "center"
             )
         elif key == K_e:
             self.app.set_mode("game")
