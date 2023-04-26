@@ -23,8 +23,6 @@ class Cat(Player):
         self.state = "idle"
         self.control = False
         self.target = 0
-        self.null_input = pygame.key.get_pressed()
-        dict.fromkeys(self.null_input, False)
         self.transition_to_state = None
         self.state_lock = False
         self.on_ground = False
@@ -90,19 +88,20 @@ class Cat(Player):
 
     def input(self, dt):
         keys = pygame.key.get_pressed()
-        if not self.control:
-            keys = self.null_input
-        if all(keys[v] == False for v in [K_LEFT, K_RIGHT]) and -self.on_ground:
+
+            
+        if not self.control or all(keys[v] == False for v in [K_LEFT, K_RIGHT]) and -self.on_ground:
             self.vel.x = 0
             if self.state not in ["idle"]:
                 self.set_state("idle")
-        if keys[K_RIGHT]:
-            self.vel.x += self.speed
-            self.face_right = True
-        if keys[K_LEFT]:
-            self.vel.x -= self.speed
-            self.face_right = False
-        if keys[K_UP]:
+        else :
+            if keys[K_RIGHT]:
+                self.vel.x += self.speed
+                self.face_right = True
+            if keys[K_LEFT]:
+                self.vel.x -= self.speed
+                self.face_right = False
+        if keys[K_UP] and  self.control:
             if self.on_ground and self.state != "jump":
                 self.set_state("jump")
                 self.lock_state()

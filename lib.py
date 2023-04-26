@@ -21,7 +21,7 @@ fonts = {}
 
 for size in [12, 18, 24, 36, 48, 60, 72]:
     fonts[size] = pygame.font.Font("fonts/mochiy.ttf", size)
-fonts["title"] = pygame.font.Font("fonts/verdana.ttf", 100, italic=True)
+fonts["title"] = pygame.font.Font("fonts/verdana.ttf", 100)
 
 
 def blend_color(color1, color2):
