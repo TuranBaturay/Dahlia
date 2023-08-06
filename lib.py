@@ -5,7 +5,6 @@ from pandas import read_csv as pd_read_csv
 from pandas import isnull as pd_isnull
 import re
 
-
 df = pd_read_csv("script/dialogues.csv", sep="|", header=[0])
 
 lang = "en"
@@ -30,11 +29,13 @@ def blend_color(color1, color2):
     return color2
 
 
-FPS = 0
+FPS = 60
 GRAVITY = 2700
 FRICTION = 0.7
-WIDTH = 1280  # 1024
-HEIGHT = 720  # 768
+# WIDTH = 1000
+# HEIGHT = 700
+WIDTH = 1280
+HEIGHT =  720
 DISPLAY_RECT = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
 INPUTBOX = pygame.event.custom_type()
@@ -64,7 +65,6 @@ darker_red = blend_color(dark_red, [40, 40, 40])
 darker_blue = blend_color(dark_blue, [10, 10, 10])
 darker_green = blend_color(dark_green, [10, 10, 10])
 
-
 animated_tile_duration = {0: [15, 60, 15, 60], 1: [10] * 7, 4: [10] * 10, 3: [20] * 4}
 
 interactive_tiles = [8, 9, 27, 28, 23, 22, 14]
@@ -73,7 +73,6 @@ character_sprites = {}
 
 tileset_cache = {}
 animated_tileset_cache = []
-
 
 def set_lang(language):
     global lang
@@ -91,10 +90,8 @@ def get_dialog_data(uid):
     # print(data)
     return data[0]
 
-
 def post_dialog(act, dat):
     pygame.event.post(pygame.event.Event(DIALOG, action=act, data=dat))
-
 
 def post_dialogs_by_id(uid):
     data = get_dialog_data(uid)
@@ -109,7 +106,6 @@ def post_dialogs_by_id(uid):
 
 
 def get_by_id(gui_list, uid):
-
     if uid == "":
         return gui_list
     res = []
