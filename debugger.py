@@ -14,7 +14,7 @@ class Debugger:
         self.max_y = 0
         self.font_size = 12
         self.min_x = 0
-        self.line_rect = pygame.Rect(0,0,0,0)
+        self.line_rect = pygame.Rect(0, 0, 0, 0)
 
     def hide(self):
         self.visible = False
@@ -39,7 +39,7 @@ class Debugger:
         self.data[key] = value
         self.persistent[key] = persistent
         string = key + ":" + str(value)
-        string_render = lib.render_text(string, self.font_size ,lib.cloud_white)
+        string_render = lib.render_text(string, self.font_size, lib.cloud_white)
         rect = string_render.get_rect()
         self.min_x = min(self.min_x, rect.w - 20)
         self.max_y += 20
@@ -56,16 +56,16 @@ class Debugger:
                 continue
             value = self.data[key]
             string = key + ":" + str(value) if key else str(value)
-            string_render = lib.render_text(string, self.font_size , (200, 200, 200))
+            string_render = lib.render_text(string, self.font_size, (200, 200, 200))
             self.line_rect.update(*string_render.get_rect())
-            self.line_rect.topleft = (lib.WIDTH - self.line_rect.w-20,counter)
-            pygame.draw.rect(self.display,lib.darker_blue,self.line_rect.inflate(20,0),border_radius=5)
-            blit_list.append(
-                [
-                    string_render,
-                    self.line_rect.copy()
-                ]
+            self.line_rect.topleft = (lib.WIDTH - self.line_rect.w - 20, counter)
+            pygame.draw.rect(
+                self.display,
+                lib.darker_blue,
+                self.line_rect.inflate(20, 0),
+                border_radius=5,
             )
+            blit_list.append([string_render, self.line_rect.copy()])
 
             counter += 22
         self.display.blits(blit_list)

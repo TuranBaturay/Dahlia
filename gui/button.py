@@ -17,12 +17,13 @@ class Button(Panel):
         func=None,
         image=None,
         color=[50, 50, 50],
+        text_color=lib.cloud_white,
         uid="",
         border_radius=0,
         font=lib.default_text_size,
         border=0,
         border_color=[50, 50, 50],
-        camera=None
+        camera=None,
     ):
         self.text_panel = None
         self.disabled = False
@@ -44,7 +45,7 @@ class Button(Panel):
             border_radius=border_radius,
             border=border,
             border_color=border_color,
-            camera=camera
+            camera=camera,
         )
         self.highlight = self.image.copy()
         pygame.draw.rect(
@@ -71,12 +72,13 @@ class Button(Panel):
                 width,
                 height,
                 text="",
+                text_color=text_color,
                 align=align,
                 color=(0, 0, 0, 0),
                 border_radius=self.border_radius,
                 font=font,
             )
-            
+
         self.set_text(text)
         self.draw()
 
@@ -90,7 +92,7 @@ class Button(Panel):
         if not self.text_panel:
             return
         self.text_panel.set_text(text)
-        #print("textbox set text : ",text)
+        # print("textbox set text : ",text)
         self.draw()
 
     def get_text(self):
@@ -106,7 +108,7 @@ class Button(Panel):
             self.right_click_func = func
 
     def set_color(self, color):
-        self.color = color
+        super().set_color(color)
         if self.text_panel:
             self.text_panel.set_text(self.text_panel.text, color)
         self.draw()
@@ -169,7 +171,7 @@ class Button(Panel):
         if self.feedback > 0 or (self.mouse_in and not self.disabled):
 
             if self.text_panel:
-                self.image.blit(self.text_panel.image, (0,0))
+                self.image.blit(self.text_panel.image, (0, 0))
 
             if self.feedback > 0:
                 # print("---------------------CLICK",self.text_panel.text,self.feedback)
@@ -187,4 +189,4 @@ class Button(Panel):
                 )
         else:
             if self.text_panel:
-                self.image.blit(self.text_panel.image, (0,0))
+                self.image.blit(self.text_panel.image, (0, 0))

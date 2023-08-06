@@ -7,14 +7,15 @@ import pygame
 import os
 import datetime as datetime
 
+DEFAULT_LEVEL = "level"
 
 class LevelViewer(Mode):
     def __init__(self, app: App, display) -> None:
         self.ti = app.get_input()
         self.refresh = pygame.image.load("Assets/icons/refresh.png").convert_alpha()
         super().__init__(app, display)
-        self.select_level("level")
-
+        self.select_level(DEFAULT_LEVEL)
+        
     def init_gui(self):
         self.gui_list = []
 
@@ -94,7 +95,7 @@ class LevelViewer(Mode):
         )
 
         new.set_func(
-            lambda: self.ti.ask_input(
+            lambda: self.ti.ask_text_input(
                 lambda text: self.add_level(text) if text else None,
                 400,
                 200,
@@ -217,15 +218,12 @@ class LevelViewer(Mode):
 
         remove_button = lib.get_by_id(self.gui_list, "remove_button")[0]
         remove_button.set_func(
-            lambda: self.ti.ask_input(
+            lambda: self.ti.ask_yesno(
                 # lambda text,level_name=level_name: self.remove_level(level_name) if (text!=None and text.lower()=="yes") else print(text),
-                lambda text: self.remove_level(level_name)
-                if text and text.lower() in ["yes", "y"]
+                lambda value: self.remove_level(level_name)
+                if value
                 else None,
-                400,
-                200,
-                f"Delete '{level_name}' ?  (Yes/No)",
-                3,
+                f"Delete '{level_name}' ?",
             )
         )
 
@@ -275,5 +273,19 @@ class LevelViewer(Mode):
             self.init_gui()
             self.select_level(name)
 
-    def on_enter_mode(self):
+    def enter_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.blit(self.app.display_stamp,(0,0))
+        self.glide_in_update(dt, mouse, mouse_button, mouse_pressed)
+
+    def on_exit_mode(self, exit_event):
+        return super().on_exit_mode_glide_out(exit_event)
+    def exit_update(self, dt, mouse, mouse_button, mouse_pressed):
+        self.display.blit(self.get_stamp(),(0,0))
+        return super().glide_out_update(dt, mouse, mouse_button, mouse_pressed)
+    def on_enter_mode(self,skip:bool = False):
         self.init_gui()
+        self.refresh_stamp()
+        if skip:
+            super().on_enter_mode()
+            return
+        self.on_enter_mode_glide_in()

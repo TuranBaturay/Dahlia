@@ -2,11 +2,14 @@ import pygame
 import lib as lib
 from debugger import Debugger
 import gui as gui
-if not __name__ == "__main__":exit()
+
+if not __name__ == "__main__":
+    exit()
 
 pygame.init()
 screen = pygame.display.set_mode((lib.WIDTH, lib.HEIGHT))
 clock = pygame.time.Clock()
+
 
 class OptionFrame(gui.Panel):
     def __init__(
@@ -173,8 +176,7 @@ while loop:
             elif event.key == pygame.K_s:
                 if sf.visible:
                     OptionFrame(
-                        gui_list,
-                        *sf.rect,border=3,text="LABEL",color=[0,0,0,0]
+                        gui_list, *sf.rect, border=3, text="LABEL", color=[0, 0, 0, 0]
                     )
             elif event.key == pygame.K_f:
                 pygame.display.toggle_fullscreen()

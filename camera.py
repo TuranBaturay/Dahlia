@@ -17,8 +17,10 @@ class Camera:
         self.set_speed(0)
         self.update(0.1)
         self.set_speed(10)
-    def set_speed(self,speed):
-        if speed < 1 : speed = 1
+
+    def set_speed(self, speed):
+        if speed < 1:
+            speed = 1
         self.speed = speed
 
     def set_target(self, target: Vector2):
@@ -30,8 +32,7 @@ class Camera:
 
     def update(self, dt):
         if self.app.mode in ["game", "edit"]:
-            
-            
+
             self.true_pos.x += ((self.target.x - self.true_pos.x) - WIDTH / 2) * (
                 dt * 10
             )

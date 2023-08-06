@@ -19,7 +19,7 @@ class Meter(Panel):
         value=100,
         bg_color=lib.darker_gray,
         uid="",
-        camera=None
+        camera=None,
     ):
         super().__init__(
             list,
@@ -32,7 +32,7 @@ class Meter(Panel):
             border_color,
             border_radius,
             uid=uid,
-            camera=camera
+            camera=camera,
         )
         self.max = max
         self.value = max

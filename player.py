@@ -1,4 +1,3 @@
-from code import interact
 import pygame
 from pygame import Vector2
 from pygame.locals import *
@@ -34,11 +33,12 @@ class Player(pygame.sprite.Sprite):
         self.cat = None
         self.fly_meter_rate = 1
         self.fly_meter_counter = 1
-        self.null_input = pygame.key.get_pressed()
-        dict.fromkeys(self.null_input, False)
         self.run_frame = 0
 
         self.interaction_feedback = 0
+        self.interaction_alpha_target = 255
+
+        # Interaction surface 'X' button
         self.interaction_surf = pygame.surface.Surface((64, 64))
         self.interaction_surf.set_colorkey((0, 0, 0))
         pygame.draw.circle(
@@ -58,6 +58,8 @@ class Player(pygame.sprite.Sprite):
 
         pygame.draw.line(self.interaction_surf, lib.cloud_white, (28, 28), (36, 36), 3)
         pygame.draw.line(self.interaction_surf, lib.cloud_white, (36, 28), (28, 36), 3)
+
+        self.interaction_surf.set_alpha(self.interaction_alpha_target)
 
         self.sfx = {
             "jump": pygame.mixer.Sound("Audio/sfx/jump.wav"),
@@ -79,7 +81,7 @@ class Player(pygame.sprite.Sprite):
 
         self.load_animations("Assets/Animation/Dahlia/jump.png", [3, 10000])
 
-        self.load_animations("Assets/Animation/Dahlia/fly.png", [10, 10, 10, 10])
+        self.load_animations("Assets/Animation/Dahlia/fly.png", [10]*8)
 
         self.display = _display
         self.animation_counter = 0
@@ -182,9 +184,8 @@ class Player(pygame.sprite.Sprite):
 
     def input(self, dt):
         keys = pygame.key.get_pressed()
-        if not self.control:
-            keys = self.null_input
-        if all(keys[v] == False for v in [K_LEFT, K_RIGHT]) and self.on_ground:
+
+        if not self.control or all(keys[v] == False for v in [K_LEFT, K_RIGHT]) and self.on_ground:
             self.vel.x = 0
             if self.state not in ["idle", "hiding", "fly", "mount_broom"]:
                 self.set_state("idle")
@@ -200,27 +201,27 @@ class Player(pygame.sprite.Sprite):
                         self.vel.y = -self.jump_force
                         self.on_ground = False
                     self.set_state("mount_broom", True, "fly")
+        if self.control:
+            if keys[K_RIGHT]:
+                self.vel.x += self.speed
+                self.face_right = True
+            if keys[K_LEFT]:
+                self.vel.x -= self.speed
+                self.face_right = False
+            if keys[K_UP]:
+                if self.state == "fly":
+                    self.vel.y -= self.speed
+                elif self.on_ground:
+                    self.set_state("jump")
+                    self.lock_state()
+            if keys[K_DOWN]:
 
-        if keys[K_RIGHT]:
-            self.vel.x += self.speed
-            self.face_right = True
-        if keys[K_LEFT]:
-            self.vel.x -= self.speed
-            self.face_right = False
-        if keys[K_UP]:
-            if self.state == "fly":
-                self.vel.y -= self.speed
-            elif self.on_ground:
-                self.set_state("jump")
-                self.lock_state()
-        if keys[K_DOWN]:
-
-            if self.state == "fly":
-                self.vel.y += self.speed
-        elif self.state == "hiding":
-            self.set_state("idle")
-        if self.state in ["hiding", "hide"]:
-            self.vel.update(0, 0)
+                if self.state == "fly":
+                    self.vel.y += self.speed
+            elif self.state == "hiding":
+                self.set_state("idle")
+            if self.state in ["hiding", "hide"]:
+                self.vel.update(0, 0)
 
     def movement_x(self, dt):
         self.vel.x *= lib.FRICTION
@@ -333,6 +334,7 @@ class Player(pygame.sprite.Sprite):
             if self.interaction_feedback <= 1:
                 self.interaction_feedback = 0
         if not self.interaction_feedback:
+
             self.interact = None
             if self.control:
                 if (
@@ -349,9 +351,22 @@ class Player(pygame.sprite.Sprite):
                     for tile in tile_list:
                         if tile and tile.interactible:
                             self.interact = tile
+                if self.interact:
+                    delta = abs(self.rect.centerx - self.interact.rect.centerx)
+                    if delta <= 16:
+                        self.interaction_alpha_target = 255
+                    else:
+                        self.interaction_alpha_target = 120
+
+                else:
+                    self.interaction_alpha_target = 0
 
         self.animation_counter += 60 * dt
-
+        self.interaction_surf.set_alpha(
+            self.interaction_feedback
+            + self.interaction_surf.get_alpha()
+            + 0.2 * (self.interaction_alpha_target - self.interaction_surf.get_alpha())
+        )
         if self.animation_counter >= len(self.animation_dict[self.state]):
             self.animation_counter = 0
             self.run_frame = 0
@@ -374,6 +389,7 @@ class Player(pygame.sprite.Sprite):
         self.display.blit(self.image, self.draw_rect)
 
         if self.interact or self.interaction_feedback:
+
             interact_rect = self.interact.rect.move(
                 -self.camera.int_pos.x, -self.camera.int_pos.y
             )
